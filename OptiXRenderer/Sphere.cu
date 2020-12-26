@@ -21,7 +21,7 @@ RT_PROGRAM void intersect(int primIndex)
     float radius = sphere.radius;
 
     // Geometry associated with the sphere
-    Matrix<4, 4> transform = sphere.transform;
+    Matrix<4, 4> transform = sphere.invTransform;
     
     float4 oriTrans = transform * make_float4(ray.origin, 1);
     float4 diTrans = transform * make_float4(ray.direction, 0);
@@ -61,11 +61,12 @@ RT_PROGRAM void bound(int primIndex, float result[6])
 {
     Sphere sphere = spheres[primIndex];
 
-    // TODO: implement sphere bouding box
-    result[0] = -1000.f;
-    result[1] = -1000.f;
-    result[2] = -1000.f;
-    result[3] = 1000.f;
-    result[4] = 1000.f;
-    result[5] = 1000.f;
+    // Sphere bouding box program not implemented for now
+    // No acceleration structure is used
+    result[0] = -10000.f;
+    result[1] = -10000.f;
+    result[2] = -10000.f;
+    result[3] = 10000.f;
+    result[4] = 10000.f;
+    result[5] = 10000.f;
 }

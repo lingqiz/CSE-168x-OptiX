@@ -139,7 +139,9 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
             optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
             float radius = fvalues[3];
 
-            struct Sphere newSphere = {center, radius, transStack.top()};
+            // save the inverse transformation for intersection test
+            struct Sphere newSphere = {center, radius, 
+                                    transStack.top().inverse()};
             scene->spheres.push_back(newSphere);
         }
     }

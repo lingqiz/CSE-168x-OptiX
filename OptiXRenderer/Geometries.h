@@ -20,7 +20,7 @@ struct Sphere
     optix::float3 center;
     float radius;
 
-    optix::Matrix<4, 4> transform;
+    optix::Matrix<4, 4> invTransform;
 };
 
 struct Attributes
