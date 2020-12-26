@@ -19,18 +19,18 @@ rtDeclareVariable(float3, dir, , );
 rtDeclareVariable(float3, u, , );
 rtDeclareVariable(float3, v, , );
 rtDeclareVariable(float3, camFrom, , );
-rtDeclareVariable(float, tanFovxRad, , );
-rtDeclareVariable(float, tanFovyRad, , );
+rtDeclareVariable(float, fovxRad, , );
+rtDeclareVariable(float, fovyRad, , );
 
 RT_PROGRAM void generateRays()
-{       
+{
     // Calculate the ray direction
-    float T_MIN = 0.00001f;
+    float T_MIN = 0.001f;
     float idh = ((float) launchIndex.x) + 0.5f;
     float idw = ((float) launchIndex.y) + 0.5f;
 
-    float alpha = tanFovxRad * (idw - width / 2.0f) / (width / 2.0f);
-    float beta  = tanFovyRad * (height / 2.0f - idh) / (height / 2.0f);
+    float alpha = tan(fovxRad / 2.0f) * (idw - width / 2.0f) / (width / 2.0f);
+    float beta  = tan(fovyRad / 2.0f) * (height / 2.0f - idh) / (height / 2.0f);
     float3 rayDir = normalize(alpha * u + beta * v - dir);
 
     // Shoot a ray to compute the color of the current pixel

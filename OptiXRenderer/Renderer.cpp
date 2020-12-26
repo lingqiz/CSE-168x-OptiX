@@ -140,8 +140,8 @@ void Renderer::buildScene()
     programs["rayGen"]["u"]->setFloat(scene->u);
     programs["rayGen"]["v"]->setFloat(scene->v);
     programs["rayGen"]["camFrom"]->setFloat(scene->from);
-    programs["rayGen"]["tanFovxRad"]->setFloat(tan(scene->fovxRad / 2.0f));
-    programs["rayGen"]["tanFovyRad"]->setFloat(tan(scene->fovyRad / 2.0f));
+    programs["rayGen"]["fovxRad"]->setFloat(scene->fovxRad);
+    programs["rayGen"]["fovyRad"]->setFloat(scene->fovyRad);
 
     // Set material programs based on integrator type.
     programs["integrator"] = programs[scene->integratorName];
