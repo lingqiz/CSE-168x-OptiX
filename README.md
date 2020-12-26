@@ -1,1 +1,2 @@
-# CSE-168x-OptiX
+## UCSD CSE 168x, Computer Graphics II
+### Ray Tracing with NVIDIA OptiX

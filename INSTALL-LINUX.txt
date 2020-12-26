@@ -1,0 +1,50 @@
+In order to compile the samples in the SDK you need the following:
+
+0. An NVIDIA graphics card with R435.80 driver or newer. It doesn't have to be
+   an RTX card. If you don't know the version of the driver, just upgrade it 
+   to the newest version. 
+
+1. CUDA Toolkit 5.0+ (https://developer.nvidia.com/cuda-downloads). Install the 
+   latest version if you don't have CUDA yet.
+
+2. CMake 3.0 minimum and GNU make. *
+
+3. C++ compiler (gcc 4.4 and 4.8 been tested). *
+
+4. OptiX 6.5.0 (https://developer.nvidia.com/designworks/optix/download).
+
+* You can install them using a package management system on Linux.
+
+--------------------------------------------------------------------------------
+
+Instructions for building:
+
+1. Install OpenGL and FreeGLUT if you haven't. On Debian or distributions 
+   that are based on Debian (like Ubuntu), you can install OpenGL and 
+   FreeGlut using the command
+     $ sudo apt-get install libgl1-mesa-dev freeglut3-dev
+
+2. Create a directory called "build" under the current directory.
+
+3. Run
+     $ cmake -S . -B build -D OptiX_INSTALL_DIR:PATH=<path>
+   where <path> is the installation path of OptiX, for instance, 
+   /usr/local/NVIDIA-OptiX-SDK-6.5.0-linux64.
+
+4. Run
+     $ cmake --build build
+   to build.
+
+5. You can find the executable, called OptiXRenderer, in the bin directory under 
+   your build directory. To run the program, you can run
+     $ <path to the executable> <path to the scene file>
+   For instance, if you are at the top-most directory, which is the parent 
+   directory of the build directory, you can run
+     $ build/bin/OptiXRenderer Scenes/hw1/scene1.test 
+
+6. When you run it, it should spawn a new window which serves as an image viewer. 
+   When you close the viewer, the generated image will be automatically saved to 
+   the working directory (the one you are currently in).
+
+7. After you create new source files, remember to add them to 
+   OptiXRenderer/CMakeLists.txt.
