@@ -32,7 +32,6 @@ bool SceneLoader::readValues(std::stringstream& s, const int numvals, T* values)
     return true;
 }
 
-
 std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
 {
     // Attempt to open the scene file 
@@ -107,21 +106,30 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         {
             optix::float3 translate = 
             optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+
+            rightMultiply(optix::Matrix<4, 4>::translate(translate));
         }
         else if (cmd == "rotate" && readValues(s, 4, fvalues))
         {
+            optix::float3 axis = 
+            optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
 
+            float angleRad = fvalues[3] / 180.0f * M_PI;
+            rightMultiply(optix::Matrix<4, 4>::rotate(angleRad, axis));
         }
         else if (cmd == "scale" && readValues(s, 3, fvalues))
         {
             optix::float3 scale = 
             optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+
+            rightMultiply(optix::Matrix<4, 4>::scale(scale));
         }
         else if (cmd == "tri" && readValues(s, 3, ivalues))
         {
             for(int idx = 0; idx < 3; idx++)
             {                
-                scene->triangleSoup.push_back(scene->vertices[ivalues[idx]]);
+                scene->triangleSoup.push_back(
+                    transformPoint(scene->vertices[ivalues[idx]]));
             }
         }
     }
