@@ -10,9 +10,10 @@
 struct Triangle
 {
     
-
-    // TODO: define the triangle structure
-
+    // vertices
+    optix::float3 A;
+    optix::float3 B;
+    optix::float3 C;    
 
 };
 

@@ -15,6 +15,7 @@ struct Scene
     std::string integratorName;
 
     std::vector<optix::float3> vertices;
+    std::vector<optix::float3> triangleSoup;
 
     std::vector<Triangle> triangles;
     std::vector<Sphere> spheres;

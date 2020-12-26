@@ -25,9 +25,10 @@ rtDeclareVariable(float, fovyRad, , );
 RT_PROGRAM void generateRays()
 {
     // Calculate the ray direction
+    // Note that the indices are flipped due to column major convention
     float T_MIN = 0.001f;
-    float idh = ((float) launchIndex.x) + 0.5f;
-    float idw = ((float) launchIndex.y) + 0.5f;
+    float idh = ((float) launchIndex.y) + 0.5f;
+    float idw = ((float) launchIndex.x) + 0.5f;
 
     float alpha = tan(fovxRad / 2.0f) * (idw - width / 2.0f) / (width / 2.0f);
     float beta  = tan(fovyRad / 2.0f) * (height / 2.0f - idh) / (height / 2.0f);
@@ -37,7 +38,7 @@ RT_PROGRAM void generateRays()
     Ray ray = make_Ray(camFrom, rayDir, 0, T_MIN, RT_DEFAULT_MAX);
     Payload payload;
     rtTrace(root, ray, payload);
-
+        
     // Write the result
     resultBuffer[launchIndex] = payload.radiance;
 }

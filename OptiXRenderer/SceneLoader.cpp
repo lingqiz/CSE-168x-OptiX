@@ -103,6 +103,27 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         {
             transStack.pop();
         }
+        else if (cmd == "translate" && readValues(s, 3, fvalues))
+        {
+            optix::float3 translate = 
+            optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+        }
+        else if (cmd == "rotate" && readValues(s, 4, fvalues))
+        {
+
+        }
+        else if (cmd == "scale" && readValues(s, 3, fvalues))
+        {
+            optix::float3 scale = 
+            optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+        }
+        else if (cmd == "tri" && readValues(s, 3, ivalues))
+        {
+            for(int idx = 0; idx < 3; idx++)
+            {                
+                scene->triangleSoup.push_back(scene->vertices[ivalues[idx]]);
+            }
+        }
     }
 
     in.close();

@@ -25,18 +25,6 @@ Renderer::Renderer(std::shared_ptr<Scene> scene) : scene(scene)
     buildScene();
 }
 
-void Renderer::run(bool progressive)
-{
-    while (currentFrame != numFrames)
-    {
-        // Render a frame.
-        context["frameID"]->setInt(++currentFrame);
-        context->launch(0, width, height);
-        // Only render a frame in progressive mode
-        if (progressive) break;
-    }
-}
-
 void Renderer::initPrograms()
 {
     // Ray generation program
@@ -53,9 +41,9 @@ void Renderer::initPrograms()
     context->setExceptionEnabled(RT_EXCEPTION_ALL, true);
     context->setExceptionProgram(0, programs["exc"]);
 
-    // Triangle programs
-    programs["triInt"] = createProgram("Triangle.cu", "intersect");
-    programs["triBound"] = createProgram("Triangle.cu", "bound");
+    // We are using Native RTX support for Triangles, so bound and intersection
+    // program is not required. However, we need to write our own programs for 
+    // Sphere geometry
 
     // Sphere programs 
     programs["sphereInt"] = createProgram("Sphere.cu", "intersect");
@@ -66,56 +54,6 @@ void Renderer::initPrograms()
 
     // Shadow Caster
     programs["shadowCaster"] = createProgram("Common.cu", "anyHit");
-}
-
-std::vector<unsigned char> Renderer::getResult()
-{
-    // Cast a float number (0 to 1) to a byte (0 to 255)
-    auto cast = [](float v)
-    {
-        v = v > 1.f ? 1.f : v < 0.f ? 0.f : v;
-        return static_cast<unsigned char>(v * 255);
-    };
-
-    float3* bufferData = (float3*)resultBuffer->map();
-
-    // Store the data into a byte vector
-    std::vector<unsigned char> imageData(width * height * 4);
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            int index = (i * width + j) * 4;
-            float3 pixel = bufferData[(height - i - 1) * width + j];
-            imageData[index + 0] = cast(pixel.x);
-            imageData[index + 1] = cast(pixel.y);
-            imageData[index + 2] = cast(pixel.z);
-            imageData[index + 3] = 255; // alpha channel
-        }
-    }
-
-    resultBuffer->unmap();
-
-    return imageData;
-}
-
-Program Renderer::createProgram(const std::string& filename, 
-    const std::string& programName)
-{
-    const char* ptx = sutil::getPtxString("OptiXRenderer", filename.c_str());
-    return context->createProgramFromPTXString(ptx, programName);
-}
-
-template <class T>
-Buffer Renderer::createBuffer(std::vector<T> data)
-{
-    Buffer buffer = context->createBuffer(RT_BUFFER_INPUT); // only host can write
-    buffer->setFormat(RT_FORMAT_USER); // use user-defined format
-    buffer->setElementSize(sizeof(T)); // size of an element
-    buffer->setSize(data.size()); // number of elements
-    std::memcpy(buffer->map(), data.data(), sizeof(T) * data.size());
-    buffer->unmap();
-    return buffer;
 }
 
 void Renderer::buildScene()
@@ -149,11 +87,13 @@ void Renderer::buildScene()
     material->setClosestHitProgram(0, programs["integrator"]);
     material->setAnyHitProgram(1, programs["shadowCaster"]);
     
-    // Create buffers and pass them to Optix programs that the buffers
-    Buffer triBuffer = createBuffer(scene->triangles);
-    programs["triInt"]["triangles"]->set(triBuffer);
-    programs["triBound"]["triangles"]->set(triBuffer);
+    // Create buffers and pass them to Optix programs
+    // float3 array for vertices (triangle soup) 
+    Buffer vertexBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3, scene->triangleSoup.size());
+    std::memcpy(vertexBuffer->map(), scene->triangleSoup.data(), sizeof(optix::float3) * scene->triangleSoup.size());
+    vertexBuffer->unmap();    
 
+    // Our Sphere data type and geometry
     Buffer sphereBuffer = createBuffer(scene->spheres);
     programs["sphereInt"]["spheres"]->set(sphereBuffer);
     programs["sphereBound"]["spheres"]->set(sphereBuffer);
@@ -168,13 +108,16 @@ void Renderer::buildScene()
 	  triGI   sphereGI
      //  \\    //   \\
 	triGeo material sphereGeo
+
+    See https://raytracing-docs.nvidia.com/optix6/guide_6_5/index.html#host#graph-nodes
+    for further references
     
     */
 
-    Geometry triGeo = context->createGeometry();
-    triGeo->setPrimitiveCount(scene->triangles.size());
-    triGeo->setIntersectionProgram(programs["triInt"]);
-    triGeo->setBoundingBoxProgram(programs["triBound"]);
+    // RTX native support for triangle geometry
+    GeometryTriangles triGeo = context->createGeometryTriangles();
+    triGeo->setPrimitiveCount(scene->triangleSoup.size() / 3);
+    triGeo->setVertices(scene->triangleSoup.size(), vertexBuffer, RT_FORMAT_FLOAT3);
 
     Geometry sphereGeo = context->createGeometry();
     sphereGeo->setPrimitiveCount(scene->spheres.size());
@@ -182,7 +125,7 @@ void Renderer::buildScene()
     sphereGeo->setBoundingBoxProgram(programs["sphereBound"]);
 
     GeometryInstance triGI = context->createGeometryInstance();
-    triGI->setGeometry(triGeo);
+    triGI->setGeometryTriangles(triGeo);
     triGI->setMaterialCount(1);
     triGI->setMaterial(0, material);
 
@@ -197,7 +140,7 @@ void Renderer::buildScene()
     GG->setChild(0, sphereGI);
 
     GeometryGroup triGG = context->createGeometryGroup();
-    triGG->setAcceleration(context->createAcceleration("NoAccel"));
+    triGG->setAcceleration(context->createAcceleration("Trbvh"));
     triGG->setChildCount(1);
     triGG->setChild(0, triGI);
 
@@ -217,4 +160,67 @@ void Renderer::buildScene()
 
     // Validate everything before running 
     context->validate();
+}
+
+Program Renderer::createProgram(const std::string& filename, 
+    const std::string& programName)
+{
+    const char* ptx = sutil::getPtxString("OptiXRenderer", filename.c_str());
+    return context->createProgramFromPTXString(ptx, programName);
+}
+
+template <class T>
+Buffer Renderer::createBuffer(std::vector<T> data)
+{
+    Buffer buffer = context->createBuffer(RT_BUFFER_INPUT); // only host can write
+    buffer->setFormat(RT_FORMAT_USER); // use user-defined format
+    buffer->setElementSize(sizeof(T)); // size of an element
+    buffer->setSize(data.size()); // number of elements
+    std::memcpy(buffer->map(), data.data(), sizeof(T) * data.size());
+    buffer->unmap();
+    return buffer;
+}
+
+void Renderer::run(bool progressive)
+{
+    while (currentFrame != numFrames)
+    {
+        // Render a frame.
+        context["frameID"]->setInt(++currentFrame);
+        context->launch(0, width, height);
+        // Only render a frame in progressive mode
+        if (progressive) break;
+    }
+}
+
+std::vector<unsigned char> Renderer::getResult()
+{
+    // Cast a float number (0 to 1) to a byte (0 to 255)
+    auto cast = [](float v)
+    {
+        v = v > 1.f ? 1.f : v < 0.f ? 0.f : v;
+        return static_cast<unsigned char>(v * 255);
+    };
+
+    float3* bufferData = (float3*)resultBuffer->map();
+
+    // Store the data into a byte vector
+    std::vector<unsigned char> imageData(width * height * 4);
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            int index = (i * width + j) * 4;
+            float3 pixel = bufferData[i * width + j];            
+
+            imageData[index + 0] = cast(pixel.x);
+            imageData[index + 1] = cast(pixel.y);
+            imageData[index + 2] = cast(pixel.z);
+            imageData[index + 3] = 255; // alpha channel
+        }
+    }
+
+    resultBuffer->unmap();
+
+    return imageData;
 }
