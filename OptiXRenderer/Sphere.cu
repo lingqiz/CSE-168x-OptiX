@@ -14,18 +14,45 @@ rtDeclareVariable(Attributes, attrib, attribute attrib, );
 RT_PROGRAM void intersect(int primIndex)
 {
     // Find the intersection of the current ray and sphere
-    Sphere sphere = spheres[primIndex];
     float t;
 
-    // TODO: implement sphere intersection test here
+    Sphere sphere = spheres[primIndex];
+    float3 center = sphere.center;
+    float radius = sphere.radius;
 
+    // Geometry associated with the sphere
+    Matrix<4, 4> transform = sphere.transform;
+    
+    float4 oriTrans = transform * make_float4(ray.origin, 1);
+    float4 diTrans = transform * make_float4(ray.direction, 0);
+    
+    float3 origin = make_float3(oriTrans) / oriTrans.w;
+    float3 direction = make_float3(diTrans);
+
+    float a = dot(direction, direction);
+    float b = 2 * dot(direction, origin - center);
+    float c = dot(origin - center, origin - center) - (radius * radius);
+    float deter = b*b - 4*a*c;
+
+    if(deter <= 0)
+    {
+        t = -1;
+    }        
+    else
+    {
+        float x1 = (-b + sqrt(deter)) / (2*a);
+        float x2 = (-b - sqrt(deter)) / (2*a);
+
+        if (x2 > 0)
+            t = x2;
+        else
+            t = x1;
+    }
+        
     // Report intersection (material programs will handle the rest)
     if (rtPotentialIntersection(t))
     {
-        // Pass attributes
-
-        // TODO: assign attribute variables here
-
+        // Pass attributes              
         rtReportIntersection(0);
     }
 }

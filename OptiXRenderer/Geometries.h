@@ -8,27 +8,23 @@
  */
 
 struct Triangle
-{
-    
+{    
     // vertices
     optix::float3 A;
     optix::float3 B;
-    optix::float3 C;    
-
+    optix::float3 C;
 };
 
 struct Sphere
 {
+    optix::float3 center;
+    float radius;
 
-
-    // TODO: define the sphere structure
-
-
+    optix::Matrix<4, 4> transform;
 };
 
 struct Attributes
 {
     
-
-    // TODO: define the attributes structure
+    
 };

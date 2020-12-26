@@ -91,7 +91,8 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         }
         else if (cmd == "vertex" && readValues(s, 3, fvalues))
         {
-            optix::float3 newVertex = optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+            optix::float3 newVertex = 
+            optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
             scene->vertices.push_back(newVertex);
         }
         else if (cmd == "pushTransform")
@@ -131,6 +132,15 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
                 scene->triangleSoup.push_back(
                     transformPoint(scene->vertices[ivalues[idx]]));
             }
+        }
+        else if (cmd == "sphere" && readValues(s, 4, fvalues))
+        {
+            optix::float3 center = 
+            optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+            float radius = fvalues[3];
+
+            struct Sphere newSphere = {center, radius, transStack.top()};
+            scene->spheres.push_back(newSphere);
         }
     }
 
