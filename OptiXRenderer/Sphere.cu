@@ -63,10 +63,9 @@ RT_PROGRAM void bound(int primIndex, float result[6])
 
     // Sphere bouding box program not implemented for now
     // No acceleration structure is used
-    result[0] = -10000.f;
-    result[1] = -10000.f;
-    result[2] = -10000.f;
-    result[3] = 10000.f;
-    result[4] = 10000.f;
-    result[5] = 10000.f;
+    float MIN = -10000.0f;
+    float MAX = +10000.0f;
+
+    result[0] = MIN; result[1] = MIN; result[2] = MIN;
+    result[3] = MAX; result[4] = MAX; result[5] = MAX;
 }
