@@ -21,11 +21,11 @@ class SceneLoader
 {
 private:
     // variables for material property
-    optix::float3 ambient = optix::make_float3(0.2f, 0.2f, 0.2f);
-    optix::float3 diffuse = optix::make_float3(0.f, 0.f, 0.f);
-    optix::float3 specular = optix::make_float3(0.f, 0.f, 0.f);
-    optix::float3 emission = optix::make_float3(0.f, 0.f, 0.f);
-    float shininess = 0.0;
+    optix::float3 ambient;
+    optix::float3 diffuse;
+    optix::float3 specular;
+    optix::float3 emission;
+    float shininess;
 
     // matrix stack for keeping track of geometry
     std::stack<optix::Matrix4x4> transStack;
@@ -53,4 +53,13 @@ private:
 
 public:
     std::shared_ptr<Scene> load(std::string sceneFilename);
+
+    SceneLoader()
+    {
+        ambient = optix::make_float3(0.2f, 0.2f, 0.2f);
+        diffuse = optix::make_float3(0.0f, 0.0f, 0.0f);
+        specular = optix::make_float3(0.0f, 0.0f, 0.0f);
+        emission = optix::make_float3(0.0f, 0.0f, 0.0f);
+        shininess = 0.0f;
+    }
 };
