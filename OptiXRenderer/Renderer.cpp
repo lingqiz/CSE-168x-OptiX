@@ -171,6 +171,7 @@ void Renderer::buildScene()
     Buffer dlightBuffer = createBuffer(scene->dlights);
     programs["integrator"]["dlights"]->set(dlightBuffer);
     programs["integrator"]["attenu"]->setFloat(scene->attenu);
+    programs["integrator"]["maxDepth"]->setInt(scene->maxDepth);
 
     // Validate everything before running 
     context->validate();

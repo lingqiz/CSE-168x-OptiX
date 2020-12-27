@@ -13,6 +13,7 @@ using namespace optix;
 rtBuffer<PointLight> plights;
 rtBuffer<DirectionalLight> dlights;
 rtDeclareVariable(float3, attenu, , );
+rtDeclareVariable(int, maxDepth, , );
 
 // Declare variables
 rtDeclareVariable(Payload, payload, rtPayload, );
@@ -90,6 +91,24 @@ RT_PROGRAM void closestHit()
                 halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
         }
     }
-
-    payload.radiance += radiance;
+    
+    // Set radiance of current ray    
+    payload.radiance = payload.specular * radiance;
+   
+    // recursive trace
+    float zeroThreshold = 0.000001f;
+    if(length(attrib.specular) < zeroThreshold || payload.depth > maxDepth)
+    {
+        payload.recurs = false;
+    }
+    else
+    {   
+        // payload.recurs = true;
+        // light ray for reflection
+        payload.origin = hitPoint;
+        payload.direction = ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal;
+        payload.specular = attrib.specular;
+        payload.depth += 1;
+    }
+        
 }

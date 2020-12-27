@@ -10,8 +10,13 @@
 struct Payload
 {
     optix::float3 radiance;
-    bool done;
-    // TODO: add more variable to payload if you need to
+    optix::float3 specular;
+    
+    // variable for recursive trace
+    int depth;    
+    bool recurs;
+    optix::float3 origin;
+    optix::float3 direction;
 };
 
 struct ShadowPayload

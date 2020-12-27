@@ -191,10 +191,15 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
 
             scene->dlights.push_back(newLight);
         }
+        else if (cmd == "maxdepth" && readValues(s, 1, ivalues))
+        {
+            scene->maxDepth = ivalues[0];
+        }
     }
     
     in.close();
 
     scene->attenu = attenu;
+    scene->maxDepth = 5;
     return scene;
 }

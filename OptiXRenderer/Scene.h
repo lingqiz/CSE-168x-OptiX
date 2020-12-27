@@ -11,6 +11,7 @@ struct Scene
     // Info about the output image
     std::string outputFilename;
     unsigned int width, height;
+    unsigned int maxDepth;
 
     std::string integratorName;
 

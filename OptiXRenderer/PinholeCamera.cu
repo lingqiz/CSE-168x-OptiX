@@ -37,13 +37,23 @@ RT_PROGRAM void generateRays()
     float beta  = tan(fovyRad / 2.0f) * (height / 2.0f - idh) / (height / 2.0f);
     float3 rayDir = normalize(alpha * u + beta * v - dir);
 
-    // Shoot a ray to compute the color of the current pixel    
-    Ray ray = make_Ray(camFrom, rayDir, primRayIndex, T_MIN, RT_DEFAULT_MAX);    
-    Payload payload;
-    payload.radiance = make_float3(0.f, 0.f, 0.f);
+    // Set up variable for recursive ray tracing
+    float3 result = make_float3(0.0f, 0.0f, 0.0f);
 
-    rtTrace(root, ray, payload);
+    Payload payload;
+    payload.depth = 0; payload.recurs = true;
+    payload.origin = camFrom; payload.direction = rayDir;
+    payload.specular = make_float3(1.0f, 1.0f, 1.0f);
+    
+    do
+    {
+        Ray ray = make_Ray(payload.origin, payload.direction, primRayIndex, T_MIN, RT_DEFAULT_MAX);
+        rtTrace(root, ray, payload);
         
+        result += payload.radiance;
+    } 
+    while(payload.recurs);
+            
     // Write the result
-    resultBuffer[launchIndex] = payload.radiance;
+    resultBuffer[launchIndex] = result;
 }

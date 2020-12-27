@@ -12,7 +12,7 @@ RT_PROGRAM void miss()
 {
     // Set the result to be the background color if miss
     payload.radiance = backgroundColor;
-    payload.done = true;
+    payload.recurs = false;
 }
 
 RT_PROGRAM void exception()
