@@ -4,4 +4,4 @@
 - Implemented simple ray tracer with Optix 6.5 and CUDA 10.0
 - See INSTALL-LINUX/WIN.txt for compile instruction
 - Used native GeometryTriangles and self-defined Sphere for geometry primitives  
-<img src="Scenes/images/dragon-1.png" width="250" align="right" vspace = "50">
+<img src="Scenes/images/dragon-1.png" width="200" align="right" vspace = "50">
