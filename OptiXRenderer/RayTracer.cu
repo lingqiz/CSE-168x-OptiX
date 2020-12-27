@@ -96,8 +96,8 @@ RT_PROGRAM void closestHit()
     payload.radiance = payload.specular * radiance;
    
     // recursive trace
-    float zeroThreshold = 0.000001f;
-    if(length(attrib.specular) < zeroThreshold || payload.depth > maxDepth)
+    float zeroDelta = 0.0001f;
+    if(length(attrib.specular) < zeroDelta || payload.depth > maxDepth)
     {
         payload.recurs = false;
     }

@@ -43,6 +43,7 @@ RT_PROGRAM void generateRays()
     Payload payload;
     payload.depth = 0; payload.recurs = true;
     payload.origin = camFrom; payload.direction = rayDir;
+    payload.radiance = make_float3(0.0f, 0.0f, 0.0f);
     payload.specular = make_float3(1.0f, 1.0f, 1.0f);
     
     do
