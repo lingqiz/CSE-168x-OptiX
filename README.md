@@ -6,3 +6,4 @@
 - Implemented simple ray tracer with Optix 6.5 and CUDA 10.0
 - See INSTALL-LINUX/WIN.txt for compile instructions
 - Used native GeometryTriangles and self-defined Sphere for geometry primitives
+- Blinn–Phong shading model, recursive trace for mirror reflection
