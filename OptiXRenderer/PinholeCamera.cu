@@ -24,11 +24,10 @@ rtDeclareVariable(float, fovyRad, , );
 
 RT_PROGRAM void generateRays()
 {
-    // Calculate the ray direction
-    // Note that the indices are flipped due to column major convention
+    // Calculate the ray direction    
     float T_MIN = 0.001f;
-    float idh = ((float) launchIndex.y) + 0.5f;
-    float idw = ((float) launchIndex.x) + 0.5f;
+    float idh = ((float) launchIndex.x) + 0.5f;
+    float idw = ((float) launchIndex.y) + 0.5f;
 
     float alpha = tan(fovxRad / 2.0f) * (idw - width / 2.0f) / (width / 2.0f);
     float beta  = tan(fovyRad / 2.0f) * (height / 2.0f - idh) / (height / 2.0f);

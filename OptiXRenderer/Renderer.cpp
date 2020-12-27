@@ -162,8 +162,7 @@ void Renderer::buildScene()
 
     // Create buffers for lights
     Buffer plightBuffer = createBuffer(scene->plights);
-    programs["integrator"]["plights"]->set(plightBuffer);
-    
+    programs["integrator"]["plights"]->set(plightBuffer);    
     Buffer dlightBuffer = createBuffer(scene->dlights);
     programs["integrator"]["dlights"]->set(dlightBuffer);
 
@@ -220,7 +219,7 @@ std::vector<unsigned char> Renderer::getResult()
         for (int j = 0; j < width; j++)
         {
             int index = (i * width + j) * 4;
-            float3 pixel = bufferData[i * width + j];            
+            float3 pixel = bufferData[j * height + i];            
 
             imageData[index + 0] = cast(pixel.x);
             imageData[index + 1] = cast(pixel.y);
