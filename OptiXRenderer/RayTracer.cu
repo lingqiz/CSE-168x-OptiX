@@ -96,8 +96,9 @@ RT_PROGRAM void closestHit()
     payload.radiance = payload.specular * radiance;
    
     // recursive trace
-    float zeroDelta = 0.001f;
-    if(length(attrib.specular) < zeroDelta || payload.depth > maxDepth)
+    float zeroDelta = 0.000001f;
+    float3 surfRef = attrib.specular;
+    if((surfRef.x + surfRef.y + surfRef.z) < zeroDelta || payload.depth > maxDepth)
     {
         payload.recurs = false;
     }
@@ -107,7 +108,7 @@ RT_PROGRAM void closestHit()
         // light ray for reflection
         payload.origin = hitPoint;
         payload.direction = ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal;
-        payload.specular *= attrib.specular;
+        payload.specular *= surfRef;
         payload.depth += 1;
     }
         
