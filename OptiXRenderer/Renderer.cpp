@@ -219,7 +219,7 @@ std::vector<unsigned char> Renderer::getResult()
         for (int j = 0; j < width; j++)
         {
             int index = (i * width + j) * 4;
-            float3 pixel = bufferData[j * height + i];            
+            float3 pixel = bufferData[i * width + j];            
 
             imageData[index + 0] = cast(pixel.x);
             imageData[index + 1] = cast(pixel.y);
