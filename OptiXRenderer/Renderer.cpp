@@ -163,6 +163,7 @@ void Renderer::buildScene()
     // Create buffers for lights
     Buffer plightBuffer = createBuffer(scene->plights);
     programs["integrator"]["plights"]->set(plightBuffer);
+    
     Buffer dlightBuffer = createBuffer(scene->dlights);
     programs["integrator"]["dlights"]->set(dlightBuffer);
 

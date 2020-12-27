@@ -27,6 +27,9 @@ private:
     optix::float3 emission;
     float shininess;
 
+    // light attenuation
+    optix::float3 attenu;
+
     // matrix stack for keeping track of geometry
     std::stack<optix::Matrix4x4> transStack;
 
@@ -61,5 +64,7 @@ public:
         specular = optix::make_float3(0.0f, 0.0f, 0.0f);
         emission = optix::make_float3(0.0f, 0.0f, 0.0f);
         shininess = 0.0f;
+
+        attenu = optix::make_float3(1.0f, 0.0f, 0.0f);
     }
 };
