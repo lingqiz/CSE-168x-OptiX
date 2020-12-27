@@ -1,13 +1,20 @@
 #Stanford Dragon
 
-size 640 480
-camera 0 0 20 0 0 -1 0 1 0 45
+size 1280 960
+camera -8 5 15 0 0 -1 0 1 0 40
 output scene7.png
 
 diffuse 0.4 0.1 0.1
 ambient 0.0 0.0 0.0
-point 0 20 20 1 1 1
-shininess 20
+
+point 10 0 0 .75 .75 .75
+point 0 10 0 .75 .75 .75
+point 0 0 10 .75 .75 .75
+point -10 0 0 .75 .75 .75
+point 0 -10 0 .75 .75 .75
+point 0 0 -10 .75 .75 .75
+
+shininess 50
 specular 0.3 0.3 0.3
 
 maxdepth 5
@@ -50018,7 +50025,7 @@ vertex  -4.0968 7.6150 1.1201
 # 50000 vertexertices
 
 pushTransform
-translate 0 -5 0
+translate 1 -4 0
 tri 1 2 3 
 tri 4 5 6 
 tri 7 8 9 
