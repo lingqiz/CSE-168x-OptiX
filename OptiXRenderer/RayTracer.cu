@@ -41,7 +41,7 @@ const float3& halfVector, const float3& diffuse, const float3& specular, const f
 
 RT_PROGRAM void closestHit()
 {
-    const float T_MIN = 0.0001f;    
+    const float T_MIN = 0.001f;    
     const int shadowRayIndex = 1;
 
     float3 radiance = attrib.ambient + attrib.emission;
@@ -96,7 +96,7 @@ RT_PROGRAM void closestHit()
     payload.radiance = payload.specular * radiance;
    
     // recursive trace
-    float zeroDelta = 0.0001f;
+    float zeroDelta = 0.001f;
     if(length(attrib.specular) < zeroDelta || payload.depth > maxDepth)
     {
         payload.recurs = false;

@@ -24,7 +24,7 @@ rtDeclareVariable(float, fovyRad, , );
 
 RT_PROGRAM void generateRays()
 {    
-    const float T_MIN = 0.0001f;
+    const float T_MIN = 0.001f;
     const int primRayIndex = 0;
 
     // Calculate the ray direction
