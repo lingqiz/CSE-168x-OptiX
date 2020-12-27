@@ -14,6 +14,7 @@ RT_PROGRAM void intersect(int primIndex)
 {
     // Find the intersection of the current ray and sphere
     float t;
+    float3 surfNormal;
 
     Sphere sphere = spheres[primIndex];
     float3 center = sphere.center;
@@ -43,17 +44,26 @@ RT_PROGRAM void intersect(int primIndex)
         float x2 = (-b - sqrt(deter)) / (2*a);
 
         if (x2 > 0)
+        {
+            // outside intersection
             t = x2;
-        else
+            surfNormal = normalize(make_float3(transform.transpose() * 
+            make_float4(origin + t * direction - center, 0)));
+        }            
+        else        
+        {   
+            // inside intersection
             t = x1;
+            surfNormal = -normalize(make_float3(transform.transpose() * 
+            make_float4(origin + t * direction - center, 0)));            
+        }            
     }
         
     // Report intersection (material programs will handle the rest)
     if (rtPotentialIntersection(t))
     {
         // compute surface normal
-        attrib.surfNormal = normalize(make_float3(transform.transpose() * 
-                            make_float4(origin + t * direction - center, 0)));
+        attrib.surfNormal = surfNormal;
 
         // assign material property
         attrib.ambient = sphere.ambient;
