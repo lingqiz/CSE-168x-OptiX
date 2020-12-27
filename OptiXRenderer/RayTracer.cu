@@ -53,17 +53,20 @@ RT_PROGRAM void closestHit()
         float3 lightDir  = normalize(light.loc - hitPoint);
         float lightDist = length(light.loc - hitPoint);
 
-        // Cast shadow ray
+        // Cast shadow ray and test for light source visibility
         Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist);
         ShadowPayload shadowPayload;
+        shadowPayload.isVisible = true;
+
         rtTrace(root, shadowRay, shadowPayload);
 
         if(shadowPayload.isVisible)
         {
             float3 halfVector = normalize(lightDir - ray.direction);
             float attenuConst = attenu.x + attenu.y * lightDist + attenu.z * (lightDist * lightDist);
-            radiance = radiance + 
-            computeShading(lightDir, light.col / attenuConst, attrib.surfNormal, halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
+            
+            radiance += computeShading(lightDir, light.col / attenuConst, attrib.surfNormal, 
+                halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
         }
     }
 
@@ -73,18 +76,20 @@ RT_PROGRAM void closestHit()
         DirectionalLight light = dlights[i];
         float3 lightDir = normalize(light.loc);
 
-        // Cast shadow ray
+        // Cast shadow ray and test for light source visibility
         Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, RT_DEFAULT_MAX);
         ShadowPayload shadowPayload;
+        shadowPayload.isVisible = true;
+
         rtTrace(root, shadowRay, shadowPayload);
 
         if(shadowPayload.isVisible)
         {
             float3 halfVector = normalize(lightDir - ray.direction);
-            radiance = radiance + 
-            computeShading(lightDir, light.col, attrib.surfNormal, halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
+            radiance += computeShading(lightDir, light.col, attrib.surfNormal, 
+                halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
         }
     }
 
-    payload.radiance = radiance;
+    payload.radiance += radiance;
 }

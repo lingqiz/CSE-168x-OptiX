@@ -38,8 +38,10 @@ RT_PROGRAM void generateRays()
     float3 rayDir = normalize(alpha * u + beta * v - dir);
 
     // Shoot a ray to compute the color of the current pixel    
-    Ray ray = make_Ray(camFrom, rayDir, primRayIndex, T_MIN, RT_DEFAULT_MAX);
+    Ray ray = make_Ray(camFrom, rayDir, primRayIndex, T_MIN, RT_DEFAULT_MAX);    
     Payload payload;
+    payload.radiance = make_float3(0.f, 0.f, 0.f);
+
     rtTrace(root, ray, payload);
         
     // Write the result
