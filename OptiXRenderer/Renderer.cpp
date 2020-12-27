@@ -231,10 +231,7 @@ std::vector<unsigned char> Renderer::getResult()
             imageData[index + 0] = cast(pixel.x);
             imageData[index + 1] = cast(pixel.y);
             imageData[index + 2] = cast(pixel.z);
-            imageData[index + 3] = 255; // alpha channel
-
-            if(pixel.x + pixel.y + pixel.z <= 0.0001f)
-                imageData[index + 3] = 100;
+            imageData[index + 3] = 255; // alpha channel      
         }
     }
 
