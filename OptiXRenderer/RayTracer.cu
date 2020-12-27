@@ -23,12 +23,25 @@ rtDeclareVariable(Attributes, attrib, attribute attrib, );
 
 // ray and intersection related
 rtDeclareVariable(Ray, ray, rtCurrentRay, );
-rtDeclareVariable(float, t, rtIntersectionDistance)
+rtDeclareVariable(float, t, rtIntersectionDistance, );
+
+static __device__ __inline__ float3 
+computeShading(const float3& lightDir, const float3& lightColor, const float3& normalVector,
+const float3& halfVector, const float3& diffuse, const float3& specular, const float shininess)
+{
+    float n_dot_l = max(dot(normalVector, lightDir), 0.0f);
+    float3 lambert = diffuse * lightColor * n_dot_l;
+
+    float n_dot_h = max(dot(normalVector, halfVector), 0.0f);
+    float3 phong   = specular * lightColor * pow(n_dot_h, shininess);
+
+    return lambert + phong;
+}
 
 RT_PROGRAM void closestHit()
 {
     const float T_MIN = 0.0001f;    
-    const int shadowRay = 1;
+    const int shadowRayIndex = 1;
 
     float3 radiance = attrib.ambient + attrib.emission;
     float3 hitPoint = ray.origin + t * ray.direction;
@@ -38,10 +51,10 @@ RT_PROGRAM void closestHit()
     {   
         PointLight light = plights[i];
         float3 lightDir  = normalize(light.loc - hitPoint);
-        float3 lightDist = length(light.loc - hitPoint);
+        float lightDist = length(light.loc - hitPoint);
 
         // Cast shadow ray
-        Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRay, T_MIN, lightDist);
+        Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist);
         ShadowPayload shadowPayload;
         rtTrace(root, shadowRay, shadowPayload);
 
@@ -57,11 +70,11 @@ RT_PROGRAM void closestHit()
     // compute shading for direct light
     for(int i = 0; i < dlights.size(); i++)
     {
-        DirectionalLight light = plights[i];
+        DirectionalLight light = dlights[i];
         float3 lightDir = normalize(light.loc);
 
         // Cast shadow ray
-        Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRay, T_MIN, RT_DEFAULT_MAX);
+        Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, RT_DEFAULT_MAX);
         ShadowPayload shadowPayload;
         rtTrace(root, shadowRay, shadowPayload);
 
@@ -72,17 +85,6 @@ RT_PROGRAM void closestHit()
             computeShading(lightDir, light.col, attrib.surfNormal, halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
         }
     }
-}
 
-static __device__ __inline__ float3 
-computeShading(const float3& lightDir, const float3& lightColor, const float3& normalVector
-const float3& halfVector, const float3& diffuse, const float3& specular, const float shininess)
-{
-    float3 n_dot_l = max(dot(normalVector, lightDir), 0.0f);
-    float3 lambert = diffuse * lightColor * n_dot_l;
-
-    float3 n_dot_h = max(dot(normalVector, halfVector), 0.0f);
-    float3 phong   = specular * lightColor * pow(n_dot_h, shininess);
-
-    return lambert + phong;
+    payload.radiance = radiance;
 }

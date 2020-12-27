@@ -25,7 +25,7 @@ rtDeclareVariable(float, fovyRad, , );
 RT_PROGRAM void generateRays()
 {    
     const float T_MIN = 0.0001f;
-    const int primRay = 0;
+    const int primRayIndex = 0;
 
     // Calculate the ray direction
     // Note that the indices are flipped due to column major convention
@@ -37,7 +37,7 @@ RT_PROGRAM void generateRays()
     float3 rayDir = normalize(alpha * u + beta * v - dir);
 
     // Shoot a ray to compute the color of the current pixel    
-    Ray ray = make_Ray(camFrom, rayDir, primRay, T_MIN, RT_DEFAULT_MAX);
+    Ray ray = make_Ray(camFrom, rayDir, primRayIndex, T_MIN, RT_DEFAULT_MAX);
     Payload payload;
     rtTrace(root, ray, payload);
         
