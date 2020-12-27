@@ -165,6 +165,7 @@ void Renderer::buildScene()
     programs["integrator"]["plights"]->set(plightBuffer);    
     Buffer dlightBuffer = createBuffer(scene->dlights);
     programs["integrator"]["dlights"]->set(dlightBuffer);
+    programs["integrator"]["attenu"]->setFloat(scene->attenu);
 
     // Validate everything before running 
     context->validate();

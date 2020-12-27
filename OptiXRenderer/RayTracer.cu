@@ -9,9 +9,10 @@
 
 using namespace optix;
 
-// Declare light buffers
+// Declare light buffers and variable
 rtBuffer<PointLight> plights;
 rtBuffer<DirectionalLight> dlights;
+rtDeclareVariable(float3, attenu, , );
 
 // Declare variables
 rtDeclareVariable(Payload, payload, rtPayload, );

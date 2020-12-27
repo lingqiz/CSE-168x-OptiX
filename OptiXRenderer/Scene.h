@@ -22,6 +22,7 @@ struct Scene
 
     std::vector<DirectionalLight> dlights;
     std::vector<PointLight> plights;
+    optix::float3 attenu;
 
     // camera parameter
     optix::float3 from;

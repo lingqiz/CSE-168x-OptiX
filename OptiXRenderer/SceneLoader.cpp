@@ -192,8 +192,9 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
             scene->dlights.push_back(newLight);
         }
     }
-
+    
     in.close();
 
+    scene->attenu = attenu;
     return scene;
 }
