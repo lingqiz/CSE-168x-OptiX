@@ -173,7 +173,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         {
             shininess = fvalues[0];
         }
-        else if (cmd == "attenu" && readValues(s, 3, fvalues))
+        else if (cmd == "attenuation" && readValues(s, 3, fvalues))
         {
             attenu = optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
         }

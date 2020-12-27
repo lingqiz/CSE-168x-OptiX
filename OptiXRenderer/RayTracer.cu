@@ -96,7 +96,7 @@ RT_PROGRAM void closestHit()
     payload.radiance = payload.specular * radiance;
    
     // recursive trace
-    float zeroDelta = 0.000001f;
+    float zeroDelta = 0.001f;
     float3 surfRef = attrib.specular;
     if((surfRef.x + surfRef.y + surfRef.z) < zeroDelta || payload.depth > maxDepth)
     {

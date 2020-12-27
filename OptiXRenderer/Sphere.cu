@@ -34,7 +34,8 @@ RT_PROGRAM void intersect(int primIndex)
     float c = dot(origin - center, origin - center) - (radius * radius);
     float deter = b*b - 4*a*c;
 
-    if(deter <= 0)
+    float zeroDelta = 0.001f;
+    if(deter <= zeroDelta)
     {
         t = -1;
     }        
