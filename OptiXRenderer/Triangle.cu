@@ -12,7 +12,7 @@ RT_PROGRAM void triangleAttribute()
     // pass surface normal and material information
     // to ray hit programs
 
-    const int primIndex = rtGetPrimitiveIndex();
+    const int primIndex = rtGetPrimitiveIndex();    
     Triangle triangle = triangles[primIndex];
 
     attrib.surfNormal = triangle.surfNormal;

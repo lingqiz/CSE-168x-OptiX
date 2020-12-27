@@ -53,6 +53,7 @@ void Renderer::initPrograms()
     programs["sphereBound"] = createProgram("Sphere.cu", "bound");
 
     // Integrators
+    // Add other integrators in the furture
     programs["raytracer"] = createProgram("RayTracer.cu", "closestHit");
 
     // Shadow Caster
@@ -87,6 +88,10 @@ void Renderer::buildScene()
     // Set material programs based on integrator type.
     programs["integrator"] = programs[scene->integratorName];
     Material material = context->createMaterial();
+
+    /* (user-defined)
+    0: camera ray, closest hit program
+    1: shadow ray, any hit program */
     material->setClosestHitProgram(0, programs["integrator"]);
     material->setAnyHitProgram(1, programs["shadowCaster"]);
     

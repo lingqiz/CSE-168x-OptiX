@@ -21,7 +21,68 @@ rtDeclareVariable(rtObject, root, , );
 // Declare attibutes 
 rtDeclareVariable(Attributes, attrib, attribute attrib, );
 
+// ray and intersection related
+rtDeclareVariable(Ray, ray, rtCurrentRay, );
+rtDeclareVariable(float, t, rtIntersectionDistance)
+
 RT_PROGRAM void closestHit()
-{        
-    payload.radiance = attrib.ambient;
+{
+    const float T_MIN = 0.0001f;    
+    const int shadowRay = 1;
+
+    float3 radiance = attrib.ambient + attrib.emission;
+    float3 hitPoint = ray.origin + t * ray.direction;
+
+    // compute shading for point light
+    for(int i = 0; i < plights.size(); i++)
+    {   
+        PointLight light = plights[i];
+        float3 lightDir  = normalize(light.loc - hitPoint);
+        float3 lightDist = length(light.loc - hitPoint);
+
+        // Cast shadow ray
+        Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRay, T_MIN, lightDist);
+        ShadowPayload shadowPayload;
+        rtTrace(root, shadowRay, shadowPayload);
+
+        if(shadowPayload.isVisible)
+        {
+            float3 halfVector = normalize(lightDir - ray.direction);
+            float attenuConst = attenu.x + attenu.y * lightDist + attenu.z * (lightDist * lightDist);
+            radiance = radiance + 
+            computeShading(lightDir, light.col / attenuConst, attrib.surfNormal, halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
+        }
+    }
+
+    // compute shading for direct light
+    for(int i = 0; i < dlights.size(); i++)
+    {
+        DirectionalLight light = plights[i];
+        float3 lightDir = normalize(light.loc);
+
+        // Cast shadow ray
+        Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRay, T_MIN, RT_DEFAULT_MAX);
+        ShadowPayload shadowPayload;
+        rtTrace(root, shadowRay, shadowPayload);
+
+        if(shadowPayload.isVisible)
+        {
+            float3 halfVector = normalize(lightDir - ray.direction);
+            radiance = radiance + 
+            computeShading(lightDir, light.col, attrib.surfNormal, halfVector, attrib.diffuse, attrib.specular, attrib.shininess);
+        }
+    }
+}
+
+static __device__ __inline__ float3 
+computeShading(const float3& lightDir, const float3& lightColor, const float3& normalVector
+const float3& halfVector, const float3& diffuse, const float3& specular, const float shininess)
+{
+    float3 n_dot_l = max(dot(normalVector, lightDir), 0.0f);
+    float3 lambert = diffuse * lightColor * n_dot_l;
+
+    float3 n_dot_h = max(dot(normalVector, halfVector), 0.0f);
+    float3 phong   = specular * lightColor * pow(n_dot_h, shininess);
+
+    return lambert + phong;
 }
