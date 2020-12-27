@@ -28,7 +28,8 @@ RT_PROGRAM void generateRays()
     const int primRayIndex = 0;
 
     // Calculate the ray direction
-    // Note that the indices are flipped due to column major convention
+    // x: width variable, y: height variable
+    // (0, 0) is at upper left corner
     float idw = ((float) launchIndex.x) + 0.5f;
     float idh = ((float) launchIndex.y) + 0.5f;
 
