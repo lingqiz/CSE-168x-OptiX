@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 
         // Load the scene file
         SceneLoader loader;
-        std::shared_ptr<Scene> scene = loader.load(argv[1]);
+        std::shared_ptr<Scene> scene = loader.load(argv[1]);        
 
         // Create the optix app by passing in the path to the scene file
         Renderer renderer(scene);

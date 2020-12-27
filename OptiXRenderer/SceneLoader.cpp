@@ -64,14 +64,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         float fvalues[12];
         int ivalues[3];
         std::string svalues[1];
-
-        // material property
-        optix::float3 ambient = optix::make_float3(0.2f, 0.2f, 0.2f);
-        optix::float3 diffuse = optix::make_float3(0.f, 0.f, 0.f);
-        optix::float3 specular = optix::make_float3(0.f, 0.f, 0.f);
-        optix::float3 emission = optix::make_float3(0.f, 0.f, 0.f);
-        float shininess = 0.0;         
-
+        
         if (cmd == "size" && readValues(s, 2, fvalues))
         {
             scene->width = (unsigned int)fvalues[0];
@@ -146,8 +139,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
             transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[2]]);            
             optix::float3 surfNormal = optix::normalize(optix::cross(diffVec1, diffVec2));
 
-            struct Triangle newTriangle = {surfNormal, transStack.top().inverse(),
-                                        ambient, diffuse, specular, emission, shininess};
+            struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess};
             scene->triangles.push_back(newTriangle);
         }
         else if (cmd == "sphere" && readValues(s, 4, fvalues))
@@ -163,7 +155,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         }
         else if (cmd == "ambient" && readValues(s, 3, fvalues))
         {
-            ambient = optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
+            ambient = optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);            
         }
         else if (cmd == "diffuse" && readValues(s, 3, fvalues))
         {

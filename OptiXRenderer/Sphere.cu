@@ -5,7 +5,6 @@
 using namespace optix;
 
 rtBuffer<Sphere> spheres; // a buffer of all spheres
-
 rtDeclareVariable(Ray, ray, rtCurrentRay, );
 
 // Attributes to be passed to material programs 
@@ -52,7 +51,17 @@ RT_PROGRAM void intersect(int primIndex)
     // Report intersection (material programs will handle the rest)
     if (rtPotentialIntersection(t))
     {
-        // Pass attributes              
+        // compute surface normal
+        attrib.surfNormal = normalize(make_float3(transform.transpose() * 
+                            make_float4(origin + t * direction - center, 0)));
+
+        // assign material property
+        attrib.ambient = sphere.ambient;
+        attrib.diffuse = sphere.diffuse;
+        attrib.specular = sphere.specular;
+        attrib.emission = sphere.emission;
+        attrib.shininess = sphere.shininess;
+
         rtReportIntersection(0);
     }
 }

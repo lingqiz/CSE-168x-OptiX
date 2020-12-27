@@ -45,6 +45,9 @@ void Renderer::initPrograms()
     // program is not required. However, we need to write our own programs for 
     // Sphere geometry
 
+    // Triangle attribute program
+    programs["triangleAttribute"] = createProgram("Triangle.cu", "triangleAttribute");
+
     // Sphere programs 
     programs["sphereInt"] = createProgram("Sphere.cu", "intersect");
     programs["sphereBound"] = createProgram("Sphere.cu", "bound");
@@ -91,7 +94,11 @@ void Renderer::buildScene()
     // float3 array for vertices (triangle soup) 
     Buffer vertexBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3, scene->triangleSoup.size());
     std::memcpy(vertexBuffer->map(), scene->triangleSoup.data(), sizeof(optix::float3) * scene->triangleSoup.size());
-    vertexBuffer->unmap();    
+    vertexBuffer->unmap();
+
+    // Material information associated with each triangle
+    Buffer triangleBuffer = createBuffer(scene->triangles);    
+    programs["triangleAttribute"]["triangles"]->set(triangleBuffer);
 
     // Our Sphere data type and geometry
     Buffer sphereBuffer = createBuffer(scene->spheres);
@@ -118,6 +125,7 @@ void Renderer::buildScene()
     GeometryTriangles triGeo = context->createGeometryTriangles();
     triGeo->setPrimitiveCount(scene->triangleSoup.size() / 3);
     triGeo->setVertices(scene->triangleSoup.size(), vertexBuffer, RT_FORMAT_FLOAT3);
+    triGeo->setAttributeProgram(programs["triangleAttribute"]);
 
     Geometry sphereGeo = context->createGeometry();
     sphereGeo->setPrimitiveCount(scene->spheres.size());

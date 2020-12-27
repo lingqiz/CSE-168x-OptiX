@@ -12,8 +12,7 @@ struct Triangle
     // vertices are stored in triangleSoup variable
     
     // (inverse) geometry transformation and surface normal
-    optix::float3 surfNormal;
-    optix::Matrix<4, 4> invTransform;
+    optix::float3 surfNormal;    
 
     // material property
     optix::float3 ambient;
