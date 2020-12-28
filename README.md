@@ -1,6 +1,6 @@
 ## UCSD CSE 168x, Computer Graphics II
 ### Ray Tracing and Path Tracing with NVIDIA OptiX
-<img src="Scenes/images/dragon_1.png" width="250" align="right" vspace = "25">
+<img src="Scenes/images/dragon_1.png" width="275" align="right" vspace = "25">
 
 #### 12/27/2020 ray-tracer-0.1
 - Implemented simple ray tracer with NVIDIA OptiX
