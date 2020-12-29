@@ -66,19 +66,36 @@ RT_PROGRAM void closestHit()
                             
             // Monte Carlo simulation
             for(int n = 0; n < nSample; n++)
-            {            
-                float u = rnd(seed); float v = rnd(seed);
-                float3 lightLoc = light.a + u * light.ab + v * light.ac;
+            {   
+                float u = rnd(seed);
+                float v = rnd(seed);
+                float3 lightLoc;
+
+                if (stratify)
+                {
+                    int gridSize = (int) sqrt((float) nSample);
+                    int x = n / gridSize;
+                    int y = n % gridSize;
+                    
+                    lightLoc = light.a 
+                        + ((float) x + u) / (float) gridSize * light.ab
+                        + ((float) y + v) / (float) gridSize * light.ac;
+                }
+                else
+                {
+                    lightLoc = light.a + u * light.ab + v * light.ac;
+                }
+                                
                 float3 lightDir = normalize(lightLoc - hitPoint);
                 float lightDist = length(lightLoc - hitPoint);
 
-                // Light source visibility                
+                // Light source visibility
                 Ray shadowRay = 
                     make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist - T_MIN);
                 ShadowPayload shadowPayload;
                 shadowPayload.isVisible = true;
                 
-                rtTrace(root, shadowRay, shadowPayload);                
+                rtTrace(root, shadowRay, shadowPayload);
                 if(shadowPayload.isVisible)
                 {
                     radianceSum +=
