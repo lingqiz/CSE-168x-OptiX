@@ -15,7 +15,6 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp; 
 &nbsp;
 
-
 <img src="Scenes/images/dragon_2.png" width="250" align="right" vspace = "50">
 
 #### 12/29/2020 path-tracer-light
