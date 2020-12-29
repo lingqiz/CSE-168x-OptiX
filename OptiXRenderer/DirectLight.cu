@@ -30,7 +30,7 @@ static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks
     const float s, const float3& lightDir, const float3& reflectDir)
 {
     float3 lambert = kd / M_PIf;
-    float3 specular = ks * (s + 2) / (2 * M_PIf) * pow(dot(reflectDir, lightDir), s);
+    float3 specular = ks * (s + 2) / (2 * M_PIf) * pow(max(dot(reflectDir, lightDir), 0.0f), s);
     return lambert + specular;
 }
 
@@ -44,26 +44,46 @@ RT_PROGRAM void closestHit()
 
     float3 radiance = attrib.emission;
     float3 hitPoint = ray.origin + t * ray.direction;
+    float3 reflectDir = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
 
     // Physically based rendering for area lights
     unsigned int seed = tea<16>(launchIndex.x, launchIndex.y);
     for(int i = 0; i < lights.size(); i++)
     {
         AreaLight light = lights[i];
+        
         float3 radianceSum = make_float3(0.f, 0.f, 0.f);
         float3 lightNormal = normalize(cross(light.ab, light.ac));
-        float  lightArea   = length(cross(light.ab, light.ac));        
-        
+        float  lightArea   = length(cross(light.ab, light.ac));
+                        
+        // Monte Carlo simulation
         for(int n = 0; n < nSample; n++)
-        {
-            float u = rnd(seed);
-            float v = rnd(seed);                        
-            rtPrintf("%.2f, %.2f \n", u, v);
+        {            
+            float u = rnd(seed); float v = rnd(seed);
+            float3 lightLoc = light.a + u * light.ab + v * light.ac;
+            float3 lightDir = normalize(lightLoc - hitPoint);
+            float lightDist = length(lightLoc - hitPoint);
+
+            // Light source visibility
+            Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist);
+            ShadowPayload shadowPayload;
+            shadowPayload.isVisible = true;
+
+            rtTrace(root, shadowRay, shadowPayload);
+            if(shadowPayload.isVisible)
+            {
+                radianceSum +=
+                phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir) * 
+                max(dot(attrib.surfNormal, lightDir), 0.0f) * 
+                max(dot(lightNormal, lightDir), 0.0f) / (lightDist * lightDist);
+            }
         }
-        radiance += radianceSum / (float) nSample;
+
+        radiance += light.col * lightArea / ((float) nSample) * radianceSum;
     }
    
     // turn off recursive trace
+    payload.radiance = radiance;
     payload.recurs = false;
         
 }

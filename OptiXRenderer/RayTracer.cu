@@ -107,7 +107,7 @@ RT_PROGRAM void closestHit()
         // payload.recurs = true;
         // light ray for reflection
         payload.origin = hitPoint;
-        payload.direction = ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal;
+        payload.direction = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
         payload.specular *= surfRef;
         payload.depth += 1;
     }
