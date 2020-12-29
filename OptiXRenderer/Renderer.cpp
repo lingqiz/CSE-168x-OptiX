@@ -55,6 +55,7 @@ void Renderer::initPrograms()
     // Integrators
     // Add other integrators in the furture
     programs["raytracer"] = createProgram("RayTracer.cu", "closestHit");
+    programs["direct"] = createProgram("DirectLight.cu", "closestHit");
 
     // Shadow Caster
     programs["shadowCaster"] = createProgram("Common.cu", "anyHit");
@@ -165,13 +166,23 @@ void Renderer::buildScene()
     programs["rayGen"]["root"]->set(root);
     programs["integrator"]["root"]->set(root);
 
-    // Create buffers for lights
-    Buffer plightBuffer = createBuffer(scene->plights);
-    programs["integrator"]["plights"]->set(plightBuffer);    
-    Buffer dlightBuffer = createBuffer(scene->dlights);
-    programs["integrator"]["dlights"]->set(dlightBuffer);
-    programs["integrator"]["attenu"]->setFloat(scene->attenu);
-    programs["integrator"]["maxDepth"]->setInt(scene->maxDepth);
+    // Create buffers for lights, ray tracer
+    if (scene->integratorName == "raytracer")
+    {
+        Buffer plightBuffer = createBuffer(scene->plights);
+        programs["integrator"]["plights"]->set(plightBuffer);
+
+        Buffer dlightBuffer = createBuffer(scene->dlights);
+        programs["integrator"]["dlights"]->set(dlightBuffer);
+
+        programs["integrator"]["attenu"]->setFloat(scene->attenu);
+        programs["integrator"]["maxDepth"]->setInt(scene->maxDepth);
+    }
+    else if (scene->integratorName == "direct")
+    {
+        Buffer lightBuffer = createBuffer(scene->alights);
+        programs["integrator"]["lights"]->set(lightBuffer);
+    }
 
     // Validate everything before running 
     context->validate();

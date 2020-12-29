@@ -18,3 +18,11 @@ struct DirectionalLight
     optix::float3 loc;
     optix::float3 col;
 };
+
+struct AreaLight
+{
+    optix::float3 a;
+    optix::float3 ab;
+    optix::float3 ac;
+    optix::float3 col;
+};

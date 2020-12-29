@@ -23,9 +23,10 @@ struct Scene
 
     std::vector<DirectionalLight> dlights;
     std::vector<PointLight> plights;
+    std::vector<AreaLight> alights;
     optix::float3 attenu;
 
-    // camera parameter
+    // Camera parameter
     optix::float3 from;
     optix::float3 at;
     optix::float3 up;
@@ -36,9 +37,15 @@ struct Scene
     float fovxRad;
     float fovyRad;
 
+    // Monte Carlo parameter
+    unsigned int lightSamples;
+    bool lightStratify;
+
     Scene()
     {
         outputFilename = "raytrace.png";
         integratorName = "raytracer";
+        lightSamples = 1;
+        lightStratify = false;
     }
 };

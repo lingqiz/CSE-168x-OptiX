@@ -74,6 +74,10 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         {
             scene->outputFilename = svalues[0];
         }
+        else if (cmd == "integrator" && readValues(s, 1, svalues))
+        {
+            scene->integratorName = svalues[0];
+        }
         else if (cmd == "camera" && readValues(s, 10, fvalues))
         {
             scene->from = optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
@@ -194,7 +198,24 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         else if (cmd == "maxdepth" && readValues(s, 1, ivalues))
         {
             scene->maxDepth = ivalues[0];
+        }        
+        else if (cmd == "quadLight" && readValues(s, 12, fvalues))
+        {
+            struct AreaLight newLight = 
+            {optix::make_float3(fvalues[0], fvalues[1], fvalues[2]), optix::make_float3(fvalues[3], fvalues[4], fvalues[5]), 
+            optix::make_float3(fvalues[6], fvalues[7], fvalues[8]), optix::make_float3(fvalues[9], fvalues[10], fvalues[11])};
+
+            scene->alights.push_back(newLight);
         }
+        else if(cmd == "lightsamples" && readValues(s, 1, ivalues))
+        {
+            scene->lightSamples = ivalues[0];
+        }
+        else if(cmd == "lightstratify" && readValues(s, 1, svalues))
+        {
+            scene->lightStratify = (svalues[0] == "on")? true : false;
+        }
+
     }
     
     in.close();
