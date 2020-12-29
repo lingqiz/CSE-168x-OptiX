@@ -143,7 +143,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
             transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[2]]);            
             optix::float3 surfNormal = optix::normalize(optix::cross(diffVec1, diffVec2));
 
-            struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess};
+            struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess, false};
             scene->triangles.push_back(newTriangle);
         }
         else if (cmd == "sphere" && readValues(s, 4, fvalues))
@@ -154,7 +154,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
 
             // save the inverse transformation for intersection test
             struct Sphere newSphere = {center, radius, transStack.top().inverse(),
-                                    ambient, diffuse, specular, emission, shininess};
+                                    ambient, diffuse, specular, emission, shininess, false};
             scene->spheres.push_back(newSphere);
         }
         else if (cmd == "ambient" && readValues(s, 3, fvalues))
@@ -222,5 +222,40 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
 
     scene->attenu = attenu;
     scene->maxDepth = 5;
+
+    // Post processing: add light source geometry
+    // for(int i = 0; i < scene->alights.size(); i++)
+    // {
+    //     AreaLight light = scene->alights[i];        
+         
+    //     // points
+    //     optix::float3 A = light.a;
+    //     optix::float3 B = light.a + light.ab;
+    //     optix::float3 C = light.a + light.ac;
+    //     optix::float3 D = light.a + light.ab + light.ac;
+
+    //     // add triangle
+    //     scene->triangleSoup.push_back(A); 
+    //     scene->triangleSoup.push_back(B);
+    //     scene->triangleSoup.push_back(C);
+
+
+
+    //     // for(int idx = 0; idx < 3; idx++)
+    //     //     {                
+    //     //         scene->triangleSoup.push_back(
+    //     //             transformPoint(scene->vertices[ivalues[idx]]));
+    //     //     }
+
+    //     //     optix::float3 diffVec1 = 
+    //     //     transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[1]]);
+    //     //     optix::float3 diffVec2 = 
+    //     //     transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[2]]);            
+    //     //     optix::float3 surfNormal = optix::normalize(optix::cross(diffVec1, diffVec2));
+
+    //     //     struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess};
+    //     //     scene->triangles.push_back(newTriangle);
+    // }
+
     return scene;
 }
