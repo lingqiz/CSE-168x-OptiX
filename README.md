@@ -10,3 +10,10 @@ Windows 10: CUDA 10, OptiX 6.5;
 Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 - Used native GeometryTriangles and self-defined Sphere for geometry primitives
 - Blinn–Phong shading model, recursive trace for mirror reflection
+
+<img src="Scenes/images/dragon_2.png" width="275" align="right" vspace = "25">
+
+#### 12/29/2020 path-tracer-light
+- Render equation for direct area lighting
+- Modified Phong BRDF
+- Monte Carlo integration with stratified sampling
