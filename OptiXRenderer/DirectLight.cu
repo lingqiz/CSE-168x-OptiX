@@ -11,8 +11,11 @@ using namespace optix;
 
 // Declare light buffers and variable
 rtBuffer<AreaLight> lights;
+rtDeclareVariable(int, nSample, , );
+rtDeclareVariable(bool, stratify, , );
 
 // Declare variables
+rtDeclareVariable(uint2, launchIndex, rtLaunchIndex, );
 rtDeclareVariable(Payload, payload, rtPayload, );
 rtDeclareVariable(rtObject, root, , );
 
@@ -36,11 +39,27 @@ RT_PROGRAM void closestHit()
     const float T_MIN = 0.001f;    
     const int shadowRayIndex = 1;
 
-    float3 radiance = attrib.ambient + attrib.emission;
+    // We slove the first two terms of the rendering equation:
+    // emission and direct lighting
+
+    float3 radiance = attrib.emission;
     float3 hitPoint = ray.origin + t * ray.direction;
 
     // Physically based rendering for area lights
-    
+    unsigned int seed = tea<16>(launchIndex.x, launchIndex.y);
+    for(int i = 0; i < lights.size(); i++)
+    {
+        AreaLight light = lights[i];
+        float3 radianceSum = make_float3(0.f, 0.f, 0.f);
+        float3 lightNormal = normalize(cross(light.ab, light.ac));
+        float  lightArea   = length(cross(light.ab, light.ac));        
+        
+        for(int n = 0; n < nSample; n++)
+        {
+            float u = rnd(seed);                    
+        }
+        radiance += radianceSum / (float) nSample;
+    }
    
     // turn off recursive trace
     payload.recurs = false;
