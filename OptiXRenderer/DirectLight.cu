@@ -43,7 +43,7 @@ static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks
 RT_PROGRAM void closestHit()
 {
     const float T_MIN = 0.001f;    
-    const int shadowRayIndex = 1;
+    const int shadowRayIndex = 1;    
 
     // We slove the first two terms of the rendering equation:
     // emission and direct lighting
@@ -72,12 +72,13 @@ RT_PROGRAM void closestHit()
                 float3 lightDir = normalize(lightLoc - hitPoint);
                 float lightDist = length(lightLoc - hitPoint);
 
-                // Light source visibility
-                Ray shadowRay = make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist);
+                // Light source visibility                
+                Ray shadowRay = 
+                    make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist - T_MIN);
                 ShadowPayload shadowPayload;
                 shadowPayload.isVisible = true;
-
-                rtTrace(root, shadowRay, shadowPayload);
+                
+                rtTrace(root, shadowRay, shadowPayload);                
                 if(shadowPayload.isVisible)
                 {
                     radianceSum +=

@@ -240,7 +240,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
 
         optix::float3 placeHolder = optix::make_float3(0.f, 0.f, 0.f);
         struct Triangle triangle_1 = 
-            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f};        
+            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f, true};        
         scene->triangles.push_back(triangle_1);
 
         // add triangle 2
@@ -249,7 +249,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         scene->triangleSoup.push_back(D);
 
         struct Triangle triangle_2 = 
-            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f};
+            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f, true};
         scene->triangles.push_back(triangle_1);        
     }
 
