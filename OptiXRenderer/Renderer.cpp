@@ -182,6 +182,9 @@ void Renderer::buildScene()
     {
         Buffer lightBuffer = createBuffer(scene->alights);
         programs["integrator"]["lights"]->set(lightBuffer);
+
+        programs["integrator"]["nSample"]->setInt(scene->lightSamples);
+        programs["integrator"]["stratify"]->setInt(scene->lightStratify);
     }
 
     // Validate everything before running 

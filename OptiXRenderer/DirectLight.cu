@@ -12,7 +12,7 @@ using namespace optix;
 // Declare light buffers and variable
 rtBuffer<AreaLight> lights;
 rtDeclareVariable(int, nSample, , );
-rtDeclareVariable(bool, stratify, , );
+rtDeclareVariable(int, stratify, , );
 
 // Declare variables
 rtDeclareVariable(uint2, launchIndex, rtLaunchIndex, );
@@ -56,7 +56,9 @@ RT_PROGRAM void closestHit()
         
         for(int n = 0; n < nSample; n++)
         {
-            float u = rnd(seed);                    
+            float u = rnd(seed);
+            float v = rnd(seed);                        
+            rtPrintf("%.2f, %.2f \n", u, v);
         }
         radiance += radianceSum / (float) nSample;
     }
