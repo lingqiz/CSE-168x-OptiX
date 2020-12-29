@@ -89,10 +89,8 @@ RT_PROGRAM void closestHit()
 
             radiance += light.col * lightArea / ((float) nSample) * radianceSum;
         }
-    }
-       
+    }       
     // turn off recursive trace
-    payload.radiance = radiance;
     payload.recurs = false;
-        
+    payload.radiance = radiance;        
 }

@@ -215,7 +215,6 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         {
             scene->lightStratify = (svalues[0] == "on")? true : false;
         }
-
     }
     
     in.close();
@@ -224,38 +223,35 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
     scene->maxDepth = 5;
 
     // Post processing: add light source geometry
-    // for(int i = 0; i < scene->alights.size(); i++)
-    // {
-    //     AreaLight light = scene->alights[i];        
-         
-    //     // points
-    //     optix::float3 A = light.a;
-    //     optix::float3 B = light.a + light.ab;
-    //     optix::float3 C = light.a + light.ac;
-    //     optix::float3 D = light.a + light.ab + light.ac;
+    for(int i = 0; i < scene->alights.size(); i++)
+    {
+        AreaLight light = scene->alights[i];
+                 
+        // points
+        optix::float3 A = light.a;
+        optix::float3 B = light.a + light.ab;
+        optix::float3 C = light.a + light.ac;
+        optix::float3 D = light.a + light.ab + light.ac;
 
-    //     // add triangle
-    //     scene->triangleSoup.push_back(A); 
-    //     scene->triangleSoup.push_back(B);
-    //     scene->triangleSoup.push_back(C);
+        // add triangle 1
+        scene->triangleSoup.push_back(A); 
+        scene->triangleSoup.push_back(B);
+        scene->triangleSoup.push_back(C);
 
+        optix::float3 placeHolder = optix::make_float3(0.f, 0.f, 0.f);
+        struct Triangle triangle_1 = 
+            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f};        
+        scene->triangles.push_back(triangle_1);
 
+        // add triangle 2
+        scene->triangleSoup.push_back(B);
+        scene->triangleSoup.push_back(C);
+        scene->triangleSoup.push_back(D);
 
-    //     // for(int idx = 0; idx < 3; idx++)
-    //     //     {                
-    //     //         scene->triangleSoup.push_back(
-    //     //             transformPoint(scene->vertices[ivalues[idx]]));
-    //     //     }
-
-    //     //     optix::float3 diffVec1 = 
-    //     //     transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[1]]);
-    //     //     optix::float3 diffVec2 = 
-    //     //     transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[2]]);            
-    //     //     optix::float3 surfNormal = optix::normalize(optix::cross(diffVec1, diffVec2));
-
-    //     //     struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess};
-    //     //     scene->triangles.push_back(newTriangle);
-    // }
+        struct Triangle triangle_2 = 
+            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f};
+        scene->triangles.push_back(triangle_1);        
+    }
 
     return scene;
 }
