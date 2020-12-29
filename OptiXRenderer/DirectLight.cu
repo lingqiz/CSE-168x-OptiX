@@ -23,17 +23,12 @@ rtDeclareVariable(Attributes, attrib, attribute attrib, );
 rtDeclareVariable(Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t, rtIntersectionDistance, );
 
-static __device__ __inline__ float3 
-computeShading(const float3& lightDir, const float3& lightColor, const float3& normalVector,
-const float3& halfVector, const float3& diffuse, const float3& specular, const float shininess)
+static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks, 
+    const float s, const float3& lightDir, const float3& reflectDir)
 {
-    float n_dot_l = max(dot(normalVector, lightDir), 0.0f);
-    float3 lambert = diffuse * lightColor * n_dot_l;
-
-    float n_dot_h = max(dot(normalVector, halfVector), 0.0f);
-    float3 phong   = specular * lightColor * pow(n_dot_h, shininess);
-
-    return lambert + phong;
+    float3 lambert = kd / M_PIf;
+    float3 specular = ks * (s + 2) / (2 * M_PIf) * pow(dot(reflectDir, lightDir), s);
+    return lambert + specular;
 }
 
 RT_PROGRAM void closestHit()
@@ -45,6 +40,7 @@ RT_PROGRAM void closestHit()
     float3 hitPoint = ray.origin + t * ray.direction;
 
     // Physically based rendering for area lights
+    
    
     // turn off recursive trace
     payload.recurs = false;

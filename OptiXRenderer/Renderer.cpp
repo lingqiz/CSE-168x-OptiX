@@ -228,7 +228,7 @@ std::vector<unsigned char> Renderer::getResult()
         return static_cast<unsigned char>(v * 255);
     };
 
-    float3* bufferData = (float3*)resultBuffer->map();
+    optix::float3* bufferData = (optix::float3*)resultBuffer->map();
 
     // Store the data into a byte vector
     std::vector<unsigned char> imageData(width * height * 4);
@@ -237,13 +237,13 @@ std::vector<unsigned char> Renderer::getResult()
         for (int j = 0; j < width; j++)
         {
             int index = (i * width + j) * 4;
-            float3 pixel = bufferData[i * width + j];            
+            optix::float3 pixel = bufferData[i * width + j];            
 
             imageData[index + 0] = cast(pixel.x);
             imageData[index + 1] = cast(pixel.y);
             imageData[index + 2] = cast(pixel.z);
             imageData[index + 3] = 255; // alpha channel      
-        }
+        }        
     }
 
     resultBuffer->unmap();
