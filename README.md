@@ -14,10 +14,14 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp; 
 &nbsp; 
 &nbsp;
-
-<img src="Scenes/images/dragon_2.png" width="250" align="right" vspace = "50">
+&nbsp; 
+&nbsp; 
+&nbsp;
 
 #### 12/29/2020 path-tracer-light
+
+<img src="Scenes/images/dragon_2.png" width="250" align="right" vspace = "25">
+
 - Solve render equation for direct area lighting
 - Modified Phong BRDF
 - Monte Carlo integration with stratified sampling
@@ -25,10 +29,16 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp; 
 &nbsp; 
 &nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 
-<img src="Scenes/images/cornell_2.png" width="250" align="right" vspace = "50">
+#### 12/30/2020 monte-carlo-path-tracer   
 
-#### 12/30/2020 monte-carlo-path-tracer
+<img src="Scenes/images/cornell_2.png" width="250" align="right" vspace = "25">  
+
 - Monte Carlo Path Tracer
 1. Brute Force approach 
 2. Next event emission
