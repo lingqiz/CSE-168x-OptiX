@@ -21,3 +21,18 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 - Solve render equation for direct area lighting
 - Modified Phong BRDF
 - Monte Carlo integration with stratified sampling
+
+&nbsp; 
+&nbsp; 
+&nbsp;
+
+<img src="Scenes/images/cornell_1.png" width="250" align="right" vspace = "50">
+
+#### 12/30/2020 monte-carlo-path-tracer
+- Monte Carlo Path Tracer
+1. Brute Force approach 
+2. Next event emission
+3. Russian roulette
+- TODO: Importance Sampling BRDF
+
+
