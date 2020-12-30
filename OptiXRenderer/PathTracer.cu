@@ -56,7 +56,7 @@ static __device__ __inline__ float3 directLight(unsigned int seed,
         float  lightArea   = length(cross(light.ab, light.ac));
                         
         // Monte Carlo integration of direct lighting
-        int nSample = 25;        
+        int nSample = 9;        
         for(int n = 0; n < nSample; n++)
         {   
             float u = rnd(seed);

@@ -26,11 +26,11 @@ rtDeclareVariable(float, fovyRad, , );
 // sample per pixel
 rtDeclareVariable(int, spp, , );
 
+const float T_MIN = 0.001f;
+const int primRayIndex = 0;
+
 RT_PROGRAM void generateRays()
-{    
-    const float T_MIN = 0.001f;
-    const int primRayIndex = 0;
-    
+{            
     // Set up variable for accumulate result
     unsigned int seedInit = tea<16>(launchIndex.x, launchIndex.y);
     float3 result = make_float3(0.0f, 0.0f, 0.0f);
