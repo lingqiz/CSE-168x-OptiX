@@ -1,6 +1,7 @@
 #include <optix.h>
 #include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
+#include "random.h"
 
 #include "Payloads.h"
 
@@ -29,28 +30,32 @@ RT_PROGRAM void generateRays()
 {    
     const float T_MIN = 0.001f;
     const int primRayIndex = 0;
-
-    // Calculate the ray direction
-    // x: width variable, y: height variable
-    // (0, 0) is at upper left corner
-    float idw = ((float) launchIndex.x) + 0.5f;
-    float idh = ((float) launchIndex.y) + 0.5f;
-
-    float alpha = tan(fovxRad / 2.0f) * (idw - width / 2.0f) / (width / 2.0f);
-    float beta  = tan(fovyRad / 2.0f) * (height / 2.0f - idh) / (height / 2.0f);
-    float3 rayDir = normalize(alpha * u + beta * v - dir);
-
-    // Set up variable for recursive ray tracing
+    
+    // Set up variable for accumulate result
+    unsigned int seedInit = tea<16>(launchIndex.x, launchIndex.y);
     float3 result = make_float3(0.0f, 0.0f, 0.0f);
-        
-    for(int i = 0; i < spp; i++)
-    {        
+
+    for(int i = 0; i < spp; i++)    
+    {
+        unsigned int seed = tea<16>(seedInit, i);
+        // Calculate the ray direction
+        // x: width variable, y: height variable
+        // (0, 0) is at upper left corner
+        float idw = ((float) launchIndex.x) + rnd(seed);
+        float idh = ((float) launchIndex.y) + rnd(seed);
+
+        float alpha = tan(fovxRad / 2.0f) * (idw - width / 2.0f) / (width / 2.0f);
+        float beta  = tan(fovyRad / 2.0f) * (height / 2.0f - idh) / (height / 2.0f);
+        float3 rayDir = normalize(alpha * u + beta * v - dir);
+
         Payload payload;
         payload.depth = 0; payload.recurs = true;
         payload.origin = camFrom; payload.direction = rayDir;
 
         payload.radiance = make_float3(0.0f, 0.0f, 0.0f);
         payload.weight = make_float3(1.0f, 1.0f, 1.0f);
+
+        payload.seed = seed;            
 
         do
         {
@@ -62,7 +67,6 @@ RT_PROGRAM void generateRays()
         result += (payload.weight * payload.radiance);
     }
     
-            
     // Write the result
     resultBuffer[launchIndex] = result / (float) spp;
 }

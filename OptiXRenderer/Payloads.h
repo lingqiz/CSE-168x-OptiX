@@ -17,6 +17,8 @@ struct Payload
     bool recurs;
     optix::float3 origin;
     optix::float3 direction;
+
+    unsigned int seed;
 };
 
 struct ShadowPayload
