@@ -24,6 +24,10 @@ rtDeclareVariable(Attributes, attrib, attribute attrib, );
 rtDeclareVariable(Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t, rtIntersectionDistance, );
 
+const float T_MIN = 0.001f;
+const int shadowRayIndex = 1;
+
+// Compute modified Phong BRDF
 static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks, 
     const float s, const float3& lightDir, const float3& reflectDir)
 {
@@ -38,99 +42,96 @@ static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks
     return lambert + specular;    
 }
 
-RT_PROGRAM void closestHit()
+// Compute radiance from direct area lighting
+static __device__ __inline__ float3 directLight(unsigned int seed, 
+    const float3& hitPoint, const float3& reflectDir)
 {
-    const float T_MIN = 0.001f;    
-    const int shadowRayIndex = 1;    
+    float3 radianceDirect = make_float3(0.0f, 0.0f, 0.0f);
+    for(int i = 0; i < lights.size(); i++)
+    {
+        AreaLight light = lights[i];
+        
+        float3 radianceSum = make_float3(0.f, 0.f, 0.f);
+        float3 lightNormal = normalize(cross(light.ab, light.ac));
+        float  lightArea   = length(cross(light.ab, light.ac));
+                        
+        // Monte Carlo integration of direct lighting
+        int nSample = 25;        
+        for(int n = 0; n < nSample; n++)
+        {   
+            float u = rnd(seed);
+            float v = rnd(seed);
+            float3 lightLoc;
+            
+            int gridSize = (int) sqrt((float) nSample);
+            int x = n / gridSize;
+            int y = n % gridSize;
+            
+            lightLoc = light.a 
+                + ((float) x + u) / (float) gridSize * light.ab
+                + ((float) y + v) / (float) gridSize * light.ac;
+                                        
+            float3 lightDir = normalize(lightLoc - hitPoint);
+            float lightDist = length(lightLoc - hitPoint);
+
+            // Light source visibility
+            Ray shadowRay = 
+                make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist - T_MIN);
+            ShadowPayload shadowPayload;
+            shadowPayload.isVisible = true;
+            
+            rtTrace(root, shadowRay, shadowPayload);
+            if(shadowPayload.isVisible)
+            {
+                radianceSum +=
+                phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir) * 
+                max(dot(attrib.surfNormal, lightDir), 0.0f) * 
+                max(dot(lightNormal, lightDir), 0.0f) / (lightDist * lightDist);
+            }
+        }
+
+        radianceDirect += light.col * lightArea / ((float) nSample) * radianceSum;
+    }
+
+    return radianceDirect;
+}
+
+// Main path tracing routine
+RT_PROGRAM void closestHit()
+{    
     unsigned int seed = tea<16>(payload.seed, payload.depth);
 
-    // Next Event estimation of the rendering equation
+    // Next event estimation of the rendering equation
     // Terminate if we hit the light source
     // Return emission for the first bounce
     if (attrib.lightSource)
     {
         payload.recurs = false;
-        if(payload.depth == 0)
-        {
+        if(payload.depth == 0)        
             payload.radiance = attrib.emission;
-        }
-            
-    }    
-    // Otherwise, keep sampling new path through the scene    
+    }             
     else
     {
         float3 hitPoint = ray.origin + t * ray.direction;
-        float3 reflectDir = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
+        float3 reflectDir = 
+            normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
 
-        // First accumulate direct lighting
-        float3 radianceDirect = make_float3(0.0f, 0.0f, 0.0f);
-        for(int i = 0; i < lights.size(); i++)
-        {
-            AreaLight light = lights[i];
-            
-            float3 radianceSum = make_float3(0.f, 0.f, 0.f);
-            float3 lightNormal = normalize(cross(light.ab, light.ac));
-            float  lightArea   = length(cross(light.ab, light.ac));
-                            
-            // Monte Carlo simulation
-            int nSample = 36;
-            bool stratify = true;
-            for(int n = 0; n < nSample; n++)
-            {   
-                float u = rnd(seed);
-                float v = rnd(seed);
-                float3 lightLoc;
-
-                if (stratify)
-                {
-                    int gridSize = (int) sqrt((float) nSample);
-                    int x = n / gridSize;
-                    int y = n % gridSize;
-                    
-                    lightLoc = light.a 
-                        + ((float) x + u) / (float) gridSize * light.ab
-                        + ((float) y + v) / (float) gridSize * light.ac;
-                }
-                else
-                {
-                    lightLoc = light.a + u * light.ab + v * light.ac;
-                }
-                                
-                float3 lightDir = normalize(lightLoc - hitPoint);
-                float lightDist = length(lightLoc - hitPoint);
-
-                // Light source visibility
-                Ray shadowRay = 
-                    make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist - T_MIN);
-                ShadowPayload shadowPayload;
-                shadowPayload.isVisible = true;
+        // Otherwise, accumulate the emission and direct lighting term first
+        payload.radiance += 
+            payload.weight * (attrib.emission + directLight(seed, hitPoint, reflectDir));
                 
-                rtTrace(root, shadowRay, shadowPayload);
-                if(shadowPayload.isVisible)
-                {
-                    radianceSum +=
-                    phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir) * 
-                    max(dot(attrib.surfNormal, lightDir), 0.0f) * 
-                    max(dot(lightNormal, lightDir), 0.0f) / (lightDist * lightDist);
-                }
-            }
-
-            radianceDirect += light.col * lightArea / ((float) nSample) * radianceSum;
-        }
-
-        payload.radiance += payload.weight * radianceDirect;
-        
         // Terminte using a Russian Roulette procedure
         float q = 1 - fminf(fmaxf(payload.weight), 1.0f);
         if (rnd(seed) < q)
         {
-            payload.recurs = false;            
+            payload.recurs = false;
         }
         else
         {
-            payload.weight /= (1 - q);            
+            // Reweight path contribution
+            payload.weight /= (1 - q);
             
-            // sample the upper half hemisphere for light ray        
+            // Sample the upper half hemisphere for indirect path tracing
             float3 lightDir = make_float3(0.0f, 0.0f, 0.0f);
             do
             {
@@ -144,13 +145,15 @@ RT_PROGRAM void closestHit()
             if(dot(attrib.surfNormal, lightDir) < 0)
                 lightDir = -lightDir;
 
+            // Update the contribution of the new path by
+            // BRDF, geometry (cos term), and 2pi (correct for Monte Carlo integration)
             payload.weight *= (2 * M_PIf) * dot(attrib.surfNormal, lightDir) * 
                 phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
 
+            // Return and trace the new path
             payload.origin = hitPoint;
             payload.direction = lightDir;
             payload.depth += 1;
         }
-    }        
-        
+    }   
 }
