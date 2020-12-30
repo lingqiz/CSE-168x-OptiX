@@ -63,7 +63,7 @@ RT_PROGRAM void generateRays()
         } 
         while(payload.recurs);
 
-        result += (payload.weight * payload.radiance);
+        result += payload.radiance;
     }
     
     // Write the result

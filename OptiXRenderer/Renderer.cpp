@@ -190,6 +190,9 @@ void Renderer::buildScene()
     }
     else if (scene->integratorName == "pathtracer")
     {
+        Buffer lightBuffer = createBuffer(scene->alights);
+        programs["integrator"]["lights"]->set(lightBuffer);
+        
         programs["integrator"]["maxDepth"]->setInt(scene->maxDepth);
     }
 

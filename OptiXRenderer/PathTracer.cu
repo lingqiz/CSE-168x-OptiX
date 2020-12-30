@@ -9,6 +9,7 @@
 
 using namespace optix;
 
+rtBuffer<AreaLight> lights;
 rtDeclareVariable(int, maxDepth, , );
 
 // Declare variables
@@ -43,28 +44,91 @@ RT_PROGRAM void closestHit()
     const int shadowRayIndex = 1;    
     unsigned int seed = tea<16>(payload.seed, payload.depth);
 
-    // Naïve Monte Carlo estimation of the rendering equation
+    // Next Event estimation of the rendering equation
     // Terminate if we hit the light source
+    // Return emission for the first bounce
     if (attrib.lightSource)
     {
         payload.recurs = false;
-        payload.radiance = attrib.emission;
+        if(payload.depth == 0)
+        {
+            payload.radiance = attrib.emission;
+        }
+            
     }    
-    // Otherwise, keep sampling new path through the scene
-    // Terminte using a Russian Roulette procedure
+    // Otherwise, keep sampling new path through the scene    
     else
-    {           
+    {
+        float3 hitPoint = ray.origin + t * ray.direction;
+        float3 reflectDir = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
+
+        // First accumulate direct lighting
+        float3 radianceDirect = make_float3(0.0f, 0.0f, 0.0f);
+        for(int i = 0; i < lights.size(); i++)
+        {
+            AreaLight light = lights[i];
+            
+            float3 radianceSum = make_float3(0.f, 0.f, 0.f);
+            float3 lightNormal = normalize(cross(light.ab, light.ac));
+            float  lightArea   = length(cross(light.ab, light.ac));
+                            
+            // Monte Carlo simulation
+            int nSample = 1;
+            bool stratify = false;
+            for(int n = 0; n < nSample; n++)
+            {   
+                float u = rnd(seed);
+                float v = rnd(seed);
+                float3 lightLoc;
+
+                if (stratify)
+                {
+                    int gridSize = (int) sqrt((float) nSample);
+                    int x = n / gridSize;
+                    int y = n % gridSize;
+                    
+                    lightLoc = light.a 
+                        + ((float) x + u) / (float) gridSize * light.ab
+                        + ((float) y + v) / (float) gridSize * light.ac;
+                }
+                else
+                {
+                    lightLoc = light.a + u * light.ab + v * light.ac;
+                }
+                                
+                float3 lightDir = normalize(lightLoc - hitPoint);
+                float lightDist = length(lightLoc - hitPoint);
+
+                // Light source visibility
+                Ray shadowRay = 
+                    make_Ray(hitPoint, lightDir, shadowRayIndex, T_MIN, lightDist - T_MIN);
+                ShadowPayload shadowPayload;
+                shadowPayload.isVisible = true;
+                
+                rtTrace(root, shadowRay, shadowPayload);
+                if(shadowPayload.isVisible)
+                {
+                    radianceSum +=
+                    phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir) * 
+                    max(dot(attrib.surfNormal, lightDir), 0.0f) * 
+                    max(dot(lightNormal, lightDir), 0.0f) / (lightDist * lightDist);
+                }
+            }
+
+            radianceDirect += light.col * lightArea / ((float) nSample) * radianceSum;
+        }
+
+        payload.radiance += payload.weight * radianceDirect;
+        
+        // Terminte using a Russian Roulette procedure
         float q = 1 - fminf(fmaxf(payload.weight), 1.0f);
         if (rnd(seed) < q)
         {
-            payload.recurs = false;
-            payload.radiance = attrib.emission;
+            payload.recurs = false;            
         }
         else
         {
-            payload.weight /= (1 - q);
-            float3 hitPoint = ray.origin + t * ray.direction;
-            float3 reflectDir = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
+            payload.weight /= (1 - q);            
             
             // sample the upper half hemisphere for light ray        
             float3 lightDir = make_float3(0.0f, 0.0f, 0.0f);
@@ -86,7 +150,7 @@ RT_PROGRAM void closestHit()
             payload.origin = hitPoint;
             payload.direction = lightDir;
             payload.depth += 1;
-        }        
+        }
     }        
         
 }

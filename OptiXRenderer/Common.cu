@@ -11,7 +11,7 @@ rtDeclareVariable(float3, backgroundColor, , );
 RT_PROGRAM void miss()
 {
     // Set the result to be the background color if miss
-    payload.radiance = backgroundColor;
+    payload.radiance += backgroundColor;
     payload.recurs = false;
 }
 
