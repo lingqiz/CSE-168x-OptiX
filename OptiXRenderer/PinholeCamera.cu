@@ -35,7 +35,7 @@ RT_PROGRAM void generateRays()
     unsigned int seedInit = tea<16>(launchIndex.x, launchIndex.y);
     float3 result = make_float3(0.0f, 0.0f, 0.0f);
 
-    for(int i = 0; i < spp; i++)    
+    for(int i = 0; i < spp; i++)
     {
         unsigned int seed = tea<16>(seedInit, i);
         // Calculate the ray direction
@@ -59,7 +59,7 @@ RT_PROGRAM void generateRays()
         do
         {
             Ray ray = make_Ray(payload.origin, payload.direction, primRayIndex, T_MIN, RT_DEFAULT_MAX);
-            rtTrace(root, ray, payload);                        
+            rtTrace(root, ray, payload);
         } 
         while(payload.recurs);
 

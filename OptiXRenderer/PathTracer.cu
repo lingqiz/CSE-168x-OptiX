@@ -29,7 +29,7 @@ static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks
     float cosTerm  = max(dot(reflectDir, lightDir), 0.0f);
     float3 lambert = kd / M_PIf;
 
-    float zeroDelta = 0.000001f;
+    float zeroDelta = 0.00001f;
     if (cosTerm < zeroDelta)
         return lambert;
 
@@ -54,7 +54,7 @@ RT_PROGRAM void closestHit()
     // Terminte using a Russian Roulette procedure
     else
     {           
-        float q = 1 - fminf(fmaxf(payload.weight), 1.0f);        
+        float q = 1 - fminf(fmaxf(payload.weight), 1.0f);
         if (rnd(seed) < q)
         {
             payload.recurs = false;
@@ -84,7 +84,7 @@ RT_PROGRAM void closestHit()
                 phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
 
             payload.origin = hitPoint;
-            payload.direction = lightDir;        
+            payload.direction = lightDir;
             payload.depth += 1;
         }        
     }        
