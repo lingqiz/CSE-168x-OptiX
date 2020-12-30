@@ -26,7 +26,7 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp; 
 &nbsp;
 
-<img src="Scenes/images/cornell_1.png" width="250" align="right" vspace = "50">
+<img src="Scenes/images/cornell_2.png" width="250" align="right" vspace = "50">
 
 #### 12/30/2020 monte-carlo-path-tracer
 - Monte Carlo Path Tracer
@@ -34,5 +34,7 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 2. Next event emission
 3. Russian roulette
 - TODO: Importance Sampling BRDF
+- TODO: Realistic material model
+
 
 

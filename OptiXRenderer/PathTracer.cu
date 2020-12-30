@@ -73,7 +73,7 @@ RT_PROGRAM void closestHit()
             float  lightArea   = length(cross(light.ab, light.ac));
                             
             // Monte Carlo simulation
-            int nSample = 100;
+            int nSample = 36;
             bool stratify = true;
             for(int n = 0; n < nSample; n++)
             {   
