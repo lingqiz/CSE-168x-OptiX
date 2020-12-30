@@ -18,10 +18,9 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp; 
 &nbsp;
 
-#### 12/29/2020 path-tracer-light
-
 <img src="Scenes/images/dragon_2.png" width="250" align="right" vspace = "25">
 
+#### 12/29/2020 path-tracer-light
 - Solve render equation for direct area lighting
 - Modified Phong BRDF
 - Monte Carlo integration with stratified sampling
