@@ -25,19 +25,12 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 - Modified Phong BRDF
 - Monte Carlo integration with stratified sampling
 
-<pre>
-
-
-
-
-
-
-
-
-
-
-
-</pre>
+&nbsp; 
+&nbsp; 
+&nbsp;
+&nbsp; 
+&nbsp; 
+&nbsp;
 
 #### 12/30/2020 monte-carlo-path-tracer   
 
