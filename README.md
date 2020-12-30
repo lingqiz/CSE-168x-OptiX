@@ -2,7 +2,7 @@
 ### Ray Tracing and Path Tracing with NVIDIA OptiX
 <img src="Scenes/images/dragon_1.png" width="240" align="right" vspace = "25">
 
-#### 12/27/2020 ray-tracer-0.1
+#### 12/27/2020 ray-tracer
 - Implemented simple ray tracer with NVIDIA OptiX
 - See INSTALL-LINUX/WIN.txt for compile instructions
 - Tested version:  

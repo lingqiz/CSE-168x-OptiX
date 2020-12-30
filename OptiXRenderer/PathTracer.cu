@@ -41,48 +41,52 @@ RT_PROGRAM void closestHit()
 {
     const float T_MIN = 0.001f;    
     const int shadowRayIndex = 1;    
+    unsigned int seed = tea<16>(payload.seed, payload.depth);
 
     // Naïve Monte Carlo estimation of the rendering equation
-
     // Terminate if we hit the light source
     if (attrib.lightSource)
     {
         payload.recurs = false;
         payload.radiance = attrib.emission;
-    }
-    // Terminte if we exceed max depth
-    else if (payload.depth > maxDepth)
-    {
-        payload.recurs = false;
-        payload.radiance = attrib.emission;
-    }
+    }    
     // Otherwise, keep sampling new path through the scene
+    // Terminte using a Russian Roulette procedure
     else
-    {                
-        float3 hitPoint = ray.origin + t * ray.direction;
-        float3 reflectDir = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
-        
-        // sample the upper half hemisphere for light ray
-        unsigned int seed = tea<16>(payload.seed, payload.depth);
-        float3 lightDir = make_float3(0.0f, 0.0f, 0.0f);
-        do
+    {           
+        float q = 1 - fminf(fmaxf(payload.weight), 1.0f);        
+        if (rnd(seed) < q)
         {
-            lightDir.x = rnd(seed) * 2.0f - 1.0f;
-            lightDir.y = rnd(seed) * 2.0f - 1.0f;
-            lightDir.z = rnd(seed) * 2.0f - 1.0f;
+            payload.recurs = false;
+            payload.radiance = attrib.emission;
         }
-        while (length(lightDir) > 1.0f);
-        lightDir = normalize(lightDir);
+        else
+        {
+            payload.weight /= (1 - q);
+            float3 hitPoint = ray.origin + t * ray.direction;
+            float3 reflectDir = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
+            
+            // sample the upper half hemisphere for light ray        
+            float3 lightDir = make_float3(0.0f, 0.0f, 0.0f);
+            do
+            {
+                lightDir.x = rnd(seed) * 2.0f - 1.0f;
+                lightDir.y = rnd(seed) * 2.0f - 1.0f;
+                lightDir.z = rnd(seed) * 2.0f - 1.0f;
+            }
+            while (length(lightDir) > 1.0f);
+            lightDir = normalize(lightDir);
 
-        if(dot(attrib.surfNormal, lightDir) < 0)
-            lightDir = -lightDir;
+            if(dot(attrib.surfNormal, lightDir) < 0)
+                lightDir = -lightDir;
 
-        payload.weight *= (2 * M_PIf) * dot(attrib.surfNormal, lightDir) * 
-            phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
+            payload.weight *= (2 * M_PIf) * dot(attrib.surfNormal, lightDir) * 
+                phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
 
-        payload.origin = hitPoint;
-        payload.direction = lightDir;        
-        payload.depth += 1;
+            payload.origin = hitPoint;
+            payload.direction = lightDir;        
+            payload.depth += 1;
+        }        
     }        
         
 }

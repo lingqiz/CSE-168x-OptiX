@@ -54,7 +54,6 @@ RT_PROGRAM void generateRays()
 
         payload.radiance = make_float3(0.0f, 0.0f, 0.0f);
         payload.weight = make_float3(1.0f, 1.0f, 1.0f);
-
         payload.seed = seed;            
 
         do
