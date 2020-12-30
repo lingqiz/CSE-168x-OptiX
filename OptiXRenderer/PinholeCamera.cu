@@ -22,6 +22,9 @@ rtDeclareVariable(float3, camFrom, , );
 rtDeclareVariable(float, fovxRad, , );
 rtDeclareVariable(float, fovyRad, , );
 
+// sample per pixel
+rtDeclareVariable(int, spp, , );
+
 RT_PROGRAM void generateRays()
 {    
     const float T_MIN = 0.001f;
@@ -39,22 +42,27 @@ RT_PROGRAM void generateRays()
 
     // Set up variable for recursive ray tracing
     float3 result = make_float3(0.0f, 0.0f, 0.0f);
-
-    Payload payload;
-    payload.depth = 0; payload.recurs = true;
-    payload.origin = camFrom; payload.direction = rayDir;
-    payload.radiance = make_float3(0.0f, 0.0f, 0.0f);
-    payload.specular = make_float3(1.0f, 1.0f, 1.0f);
-    
-    do
-    {
-        Ray ray = make_Ray(payload.origin, payload.direction, primRayIndex, T_MIN, RT_DEFAULT_MAX);
-        rtTrace(root, ray, payload);
         
-        result += payload.radiance;
-    } 
-    while(payload.recurs);
+    for(int i = 0; i < spp; i++)
+    {        
+        Payload payload;
+        payload.depth = 0; payload.recurs = true;
+        payload.origin = camFrom; payload.direction = rayDir;
+
+        payload.radiance = make_float3(0.0f, 0.0f, 0.0f);
+        payload.weight = make_float3(1.0f, 1.0f, 1.0f);
+
+        do
+        {
+            Ray ray = make_Ray(payload.origin, payload.direction, primRayIndex, T_MIN, RT_DEFAULT_MAX);
+            rtTrace(root, ray, payload);                        
+        } 
+        while(payload.recurs);
+
+        result += (payload.weight * payload.radiance);
+    }
+    
             
     // Write the result
-    resultBuffer[launchIndex] = result;
+    resultBuffer[launchIndex] = result / (float) spp;
 }

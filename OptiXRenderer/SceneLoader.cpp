@@ -215,6 +215,10 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         {
             scene->lightStratify = (svalues[0] == "on")? true : false;
         }
+        else if(cmd == "spp" && readValues(s, 1, ivalues))
+        {
+            scene->spp = ivalues[0];
+        }
     }
     
     in.close();

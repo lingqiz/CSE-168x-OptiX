@@ -38,6 +38,7 @@ struct Scene
     float fovyRad;
 
     // Monte Carlo parameter
+    unsigned int spp;
     unsigned int lightSamples;
     bool lightStratify;
 

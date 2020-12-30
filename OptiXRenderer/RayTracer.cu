@@ -93,7 +93,7 @@ RT_PROGRAM void closestHit()
     }
     
     // Set radiance of current ray    
-    payload.radiance = payload.specular * radiance;
+    payload.radiance = payload.weight * radiance;
    
     // recursive trace
     float zeroDelta = 0.001f;
@@ -108,7 +108,7 @@ RT_PROGRAM void closestHit()
         // light ray for reflection
         payload.origin = hitPoint;
         payload.direction = normalize(ray.direction - 2 * dot(ray.direction, attrib.surfNormal) * attrib.surfNormal);
-        payload.specular *= surfRef;
+        payload.weight *= surfRef;
         payload.depth += 1;
     }
         

@@ -56,6 +56,7 @@ void Renderer::initPrograms()
     // Add other integrators in the furture
     programs["raytracer"] = createProgram("RayTracer.cu", "closestHit");
     programs["direct"] = createProgram("DirectLight.cu", "closestHit");
+    programs["pathtracer"] = createProgram("PathTracer.cu", "closestHit");
 
     // Shadow Caster
     programs["shadowCaster"] = createProgram("Common.cu", "anyHit");
@@ -85,6 +86,7 @@ void Renderer::buildScene()
     programs["rayGen"]["camFrom"]->setFloat(scene->from);
     programs["rayGen"]["fovxRad"]->setFloat(scene->fovxRad);
     programs["rayGen"]["fovyRad"]->setFloat(scene->fovyRad);
+    programs["rayGen"]["spp"]->setInt(scene->spp);
 
     // Set material programs based on integrator type.
     programs["integrator"] = programs[scene->integratorName];
@@ -185,6 +187,10 @@ void Renderer::buildScene()
 
         programs["integrator"]["nSample"]->setInt(scene->lightSamples);
         programs["integrator"]["stratify"]->setInt(scene->lightStratify);
+    }
+    else if (scene->integratorName == "pathtracer")
+    {
+        programs["integrator"]["maxDepth"]->setInt(scene->maxDepth);
     }
 
     // Validate everything before running 

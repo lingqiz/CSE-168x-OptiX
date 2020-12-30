@@ -10,7 +10,7 @@
 struct Payload
 {
     optix::float3 radiance;
-    optix::float3 specular;
+    optix::float3 weight;
     
     // variable for recursive trace
     int depth;    
