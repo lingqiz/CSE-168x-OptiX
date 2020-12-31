@@ -43,4 +43,4 @@ Brute Force approach / Next event emission + Russian roulette
 &nbsp;  
 
 ### Gallery
-<img src="Scenes/images/bunny.png" width="320" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="240" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="320" vspace = "25">  
+<img src="Scenes/images/bunny.png" width="256" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="192" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="256" vspace = "25">  
