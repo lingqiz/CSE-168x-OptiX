@@ -27,7 +27,7 @@ rtDeclareVariable(float, t, rtIntersectionDistance, );
 const float T_MIN = 0.001f;
 const int shadowRayIndex = 1;
 
-enum Sampler { uniform, cosine, brdf };
+enum Sampler {uniform, cosine, brdf};
 
 // Compute modified Phong BRDF
 static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks, 
@@ -229,7 +229,6 @@ RT_PROGRAM void closestHit()
 
                 case brdf:
                     lightDir = brdfSampler(seed, attrib.surfNormal, reflectDir, attrib.brdf_t, attrib.shininess);
-                    
                     if(dot(lightDir, attrib.surfNormal) <= 0)
                     {                        
                         payload.weight *= make_float3(0.0f, 0.0f, 0.0f);
