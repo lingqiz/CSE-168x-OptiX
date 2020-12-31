@@ -72,6 +72,7 @@ RT_PROGRAM void intersect(int primIndex)
         attrib.specular = sphere.specular;
         attrib.emission = sphere.emission;
         attrib.shininess = sphere.shininess;
+        attrib.brdf_t = sphere.brdf_t;
         attrib.lightSource = sphere.lightSource;
 
         rtReportIntersection(0);

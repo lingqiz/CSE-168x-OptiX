@@ -20,6 +20,7 @@ struct Triangle
     optix::float3 specular;
     optix::float3 emission;
     float shininess;
+    float brdf_t;
 
     unsigned int lightSource;    
 };
@@ -37,6 +38,7 @@ struct Sphere
     optix::float3 specular;
     optix::float3 emission;
     float shininess;
+    float brdf_t;
 
     unsigned int lightSource;
 };
@@ -52,6 +54,7 @@ struct Attributes
     optix::float3 specular;
     optix::float3 emission;
     float shininess;
+    float brdf_t;
 
     unsigned int lightSource;
 };

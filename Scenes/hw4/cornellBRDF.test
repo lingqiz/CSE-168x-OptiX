@@ -1,7 +1,7 @@
 #Cornell Box
-size 480 480
+size 960 960
 integrator pathtracer
-spp 64
+spp 6400
 importancesampling brdf
 nexteventestimation on
 russianroulette on

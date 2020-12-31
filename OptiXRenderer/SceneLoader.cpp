@@ -143,7 +143,10 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
             transformPoint(scene->vertices[ivalues[0]]) - transformPoint(scene->vertices[ivalues[2]]);            
             optix::float3 surfNormal = optix::normalize(optix::cross(diffVec1, diffVec2));
 
-            struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess, false};
+            float brdf_t = (specular.x + specular.y + specular.z) / 
+                (specular.x + specular.y + specular.z + diffuse.x + diffuse.y + diffuse.z);
+
+            struct Triangle newTriangle = {surfNormal, ambient, diffuse, specular, emission, shininess, brdf_t, false};
             scene->triangles.push_back(newTriangle);
         }
         else if (cmd == "sphere" && readValues(s, 4, fvalues))
@@ -152,9 +155,12 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
             optix::make_float3(fvalues[0], fvalues[1], fvalues[2]);
             float radius = fvalues[3];
 
+            float brdf_t = (specular.x + specular.y + specular.z) / 
+                (specular.x + specular.y + specular.z + diffuse.x + diffuse.y + diffuse.z);
+            
             // save the inverse transformation for intersection test
             struct Sphere newSphere = {center, radius, transStack.top().inverse(),
-                                    ambient, diffuse, specular, emission, shininess, false};
+                                    ambient, diffuse, specular, emission, shininess, brdf_t, false};
             scene->spheres.push_back(newSphere);
         }
         else if (cmd == "ambient" && readValues(s, 3, fvalues))
@@ -244,7 +250,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
 
         optix::float3 placeHolder = optix::make_float3(0.f, 0.f, 0.f);
         struct Triangle triangle_1 = 
-            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f, true};        
+            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f, 0.0f, true};        
         scene->triangles.push_back(triangle_1);
 
         // add triangle 2
@@ -253,7 +259,7 @@ std::shared_ptr<Scene> SceneLoader::load(std::string sceneFilename)
         scene->triangleSoup.push_back(D);
 
         struct Triangle triangle_2 = 
-            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f, true};
+            {placeHolder, placeHolder, placeHolder, placeHolder, light.col, 0.0f, 0.0f, true};
         scene->triangles.push_back(triangle_1);        
     }
 

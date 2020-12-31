@@ -22,5 +22,6 @@ RT_PROGRAM void triangleAttribute()
     attrib.specular = triangle.specular;
     attrib.emission = triangle.emission;
     attrib.shininess = triangle.shininess;
+    attrib.brdf_t = triangle.brdf_t;
     attrib.lightSource = triangle.lightSource;
 }
