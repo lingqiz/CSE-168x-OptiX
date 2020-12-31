@@ -43,6 +43,6 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 
 &nbsp;  
 &nbsp;  
-&nbsp;  
 
-<img src="Scenes/images/bunny.png" width="320" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="240" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="320" vspace = "25">  
+### Gallery
+<img src="Scenes/images/bunny.png" width="336" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="252" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="336" vspace = "25">  
