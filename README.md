@@ -13,10 +13,8 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 
 &nbsp; 
 &nbsp; 
-&nbsp;
 &nbsp; 
 &nbsp; 
-&nbsp;
 
 <img src="Scenes/images/dragon_2.png" width="250" align="right" vspace = "25">
 
