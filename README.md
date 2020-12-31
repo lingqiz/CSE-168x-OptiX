@@ -33,10 +33,8 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 
 #### 12/30/2020 monte-carlo-path-tracer   
 
-- Monte Carlo Path Tracer
-1. Brute Force approach 
-2. Next event emission
-3. Russian roulette
+- Monte Carlo Path Tracer  
+Brute Force approach / Next event emission + Russian roulette
 - Importance Sampling with modified Phong BRDF
 - TODO: Realistic material model  
 - TODO: Multiple Importance Sampling
@@ -45,4 +43,4 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp;  
 
 ### Gallery
-<img src="Scenes/images/bunny.png" width="336" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="252" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="336" vspace = "25">  
+<img src="Scenes/images/bunny.png" width="320" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="240" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="320" vspace = "25">  
