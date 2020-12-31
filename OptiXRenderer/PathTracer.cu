@@ -96,6 +96,25 @@ static __device__ __inline__ float3 directLight(unsigned int seed,
     return radianceDirect;
 }
 
+// Uniformlly sample the upper hemisphere
+static __device__ __inline__ float3 uniformSampler(unsigned int seed, const float3& surfNormal)
+{
+    float3 lightDir = make_float3(0.0f, 0.0f, 0.0f);
+    do
+    {
+        lightDir.x = rnd(seed) * 2.0f - 1.0f;
+        lightDir.y = rnd(seed) * 2.0f - 1.0f;
+        lightDir.z = rnd(seed) * 2.0f - 1.0f;
+    }
+    while (length(lightDir) > 1.0f);
+    lightDir = normalize(lightDir);
+
+    if(dot(surfNormal, lightDir) < 0)
+        return -lightDir;
+
+    return lightDir;
+}
+
 // Main path tracing routine
 RT_PROGRAM void closestHit()
 {    
@@ -132,18 +151,7 @@ RT_PROGRAM void closestHit()
             payload.weight /= (1 - q);
             
             // Sample the upper half hemisphere for indirect path tracing
-            float3 lightDir = make_float3(0.0f, 0.0f, 0.0f);
-            do
-            {
-                lightDir.x = rnd(seed) * 2.0f - 1.0f;
-                lightDir.y = rnd(seed) * 2.0f - 1.0f;
-                lightDir.z = rnd(seed) * 2.0f - 1.0f;
-            }
-            while (length(lightDir) > 1.0f);
-            lightDir = normalize(lightDir);
-
-            if(dot(attrib.surfNormal, lightDir) < 0)
-                lightDir = -lightDir;
+            float3 lightDir = uniformSampler(seed, attrib.surfNormal);
 
             // Update the contribution of the new path by
             // BRDF, geometry (cos term), and 2pi (correct for Monte Carlo integration)
