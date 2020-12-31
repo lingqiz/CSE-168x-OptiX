@@ -29,7 +29,7 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp;  
 &nbsp;  
 
-<img src="Scenes/images/cornell_2.png" width="250" align="right" vspace = "25">  
+<img src="Scenes/images/cornell_1.png" width="250" align="right" vspace = "25">  
 
 #### 12/30/2020 monte-carlo-path-tracer   
 
@@ -37,5 +37,9 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 1. Brute Force approach 
 2. Next event emission
 3. Russian roulette
-- TODO: Importance Sampling BRDF
-- TODO: Realistic material model
+- Importance Sampling with modified Phong BRDF
+- TODO: Realistic material model  
+
+<img src="Scenes/images/bunny.png" width="250" vspace = "25">    
+<img src="Scenes/images/cornell_2.png" width="250" vspace = "25">  
+<img src="Scenes/images/dragon_3.png" width="250" vspace = "25">  

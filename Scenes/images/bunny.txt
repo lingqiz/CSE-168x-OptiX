@@ -2,17 +2,17 @@
 
 size 1280 960
 integrator pathtracer
-spp 1024
+spp 64
 nexteventestimation on
 russianroulette on
-camera  -8 6 14  0 0 0  0 1 0  45
+camera  -2 3 4 -0.5 1.5 0  0 1 0 40
 output bunny.png
 
 quadLight  -5 10 -25  0 5 5  10 0 0  10 10 12
 quadLight  -5 20 15  0 -5 5  10 0 0  18 18 16
 
-diffuse 0.5 0.5 0.5
-shininess 1
+diffuse 0.75 0.75 0.75
+shininess 10
 specular 0.1 0.1 0.1
 
 vertex -0.0378 0.1279 0.0045
@@ -35962,6 +35962,12 @@ vertex -0.0222 0.1574 -0.0065
 vertex -0.0705 0.1506 -0.0435
 vertex -0.0310 0.1537 -0.0035
 vertex -0.0400 0.1536 -0.0082
+
+# total: 35947 vertex
+
+pushTransform
+scale 16 16 16
+
 tri 21216 21215 20399
 tri 9186 9280 14838
 tri 16020 13433 5187
@@ -105413,3 +105419,22 @@ tri 34780 34909 17277
 tri 17346 34909 17279
 tri 34909 17346 17277
 tri 17277 17346 17345
+
+popTransform
+
+diffuse 0.5 0.5 0.5
+shininess 20
+specular 0 0 0
+
+vertex -1 +1 0
+vertex -1 -1 0
+vertex +1 -1 0
+vertex +1 +1 0
+
+pushTransform
+rotate 1 0 0 -90
+scale 1000 1000 1000
+
+tri 35947 35948 35949
+tri 35947 35949 35950
+popTransform

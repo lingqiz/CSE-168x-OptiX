@@ -2,22 +2,22 @@
 
 size 1280 960
 integrator pathtracer
-spp 1024
+spp 6400
 nexteventestimation on
 russianroulette on
-camera  -8 6 14  -1 -1 0  0 1 0  45
+camera  -10.5 5 19  -1 -1 0  0 1 0  45
 output dragon.png
 
-quadLight  -5 10 -25  0 5 5  10 0 0  10 10 12
+quadLight  -6 8 -28  0 5 5  10 0 0  10 10 12
 quadLight  -5 20 15  0 -5 5  10 0 0  18 18 16
 
 maxdepth 5
 
 maxverts 50005
 
-diffuse 0.3 0.6 0.1
-shininess 20
-specular 0.2 0.2 0.2
+diffuse 0.77 0.62 0.36
+shininess 25
+specular 0.1 0.1 0.1
 
 vertex 0 0 0
 vertex  1.6831 3.0852 -0.9792
@@ -150027,9 +150027,9 @@ tri 29825 42257 47438
 
 popTransform
 
-diffuse 0.7 0.7 0.7
-shininess 20
-specular 0 0 0
+diffuse 0.25 0.25 0.25
+shininess 2000
+specular 0.75 0.75 0.75
 
 vertex -1 +1 0
 vertex -1 -1 0
