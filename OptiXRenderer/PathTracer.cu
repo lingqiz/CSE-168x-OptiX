@@ -27,6 +27,8 @@ rtDeclareVariable(float, t, rtIntersectionDistance, );
 const float T_MIN = 0.001f;
 const int shadowRayIndex = 1;
 
+enum Sampler { uniform, cosine, brdf };
+
 // Compute modified Phong BRDF
 static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks, 
     const float s, const float3& lightDir, const float3& reflectDir)
@@ -56,9 +58,10 @@ static __device__ __inline__ float3 directLight(unsigned int seed,
         float  lightArea   = length(cross(light.ab, light.ac));
                         
         // Monte Carlo integration of direct lighting
-        int nSample = 9;        
+        int nSample = 1;        
         for(int n = 0; n < nSample; n++)
         {   
+            // Stratified sampling for area light source
             float u = rnd(seed);
             float v = rnd(seed);
             float3 lightLoc;
@@ -115,6 +118,25 @@ static __device__ __inline__ float3 uniformSampler(unsigned int seed, const floa
     return lightDir;
 }
 
+// Sample with cosine PDF
+static __device__ __inline__ float3 cosSampler(unsigned int seed, const float3& surfNormal)
+{
+    float theta = acosf(sqrtf(rnd(seed)));
+    float phi = 2 * M_PIf * rnd(seed);
+
+    float3 s = make_float3(cosf(phi) * sinf(theta), 
+        sinf(phi) * sinf(theta), cosf(theta));
+
+    float3 a = make_float3(1.0f, 0.f, 0.f);
+    if(1 - dot(a, surfNormal) < 0.1f)
+        a = make_float3(0.f, 1.0f, 0.f);
+
+    float3 u = normalize(cross(a, surfNormal));
+    float3 v = cross(surfNormal, u);
+
+    return s.x * u + s.y * v + s.z * surfNormal;
+}
+
 // Main path tracing routine
 RT_PROGRAM void closestHit()
 {    
@@ -148,15 +170,29 @@ RT_PROGRAM void closestHit()
         else
         {
             // Reweight path contribution
+            // And sample next indirect path
+            // Update the contribution of the new path
             payload.weight /= (1 - q);
-            
-            // Sample the upper half hemisphere for indirect path tracing
-            float3 lightDir = uniformSampler(seed, attrib.surfNormal);
+            float3 lightDir;
 
-            // Update the contribution of the new path by
-            // BRDF, geometry (cos term), and 2pi (correct for Monte Carlo integration)
-            payload.weight *= (2 * M_PIf) * dot(attrib.surfNormal, lightDir) * 
-                phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
+            Sampler sampler = cosine;
+            switch (sampler)
+            {
+                case uniform:
+                    lightDir = uniformSampler(seed, attrib.surfNormal);
+                    payload.weight *= (2 * M_PIf) * dot(attrib.surfNormal, lightDir) * 
+                    phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
+                break;
+
+                case cosine:
+                    lightDir = cosSampler(seed, attrib.surfNormal);
+                    payload.weight *= M_PIf * 
+                    phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir);
+                break;
+
+                case brdf:
+                break;
+            }            
 
             // Return and trace the new path
             payload.origin = hitPoint;
