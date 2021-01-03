@@ -28,6 +28,7 @@ const float T_MIN = 0.001f;
 const int shadowRayIndex = 1;
 
 enum Sampler {uniform, cosine, brdf};
+Sampler sampler = brdf;
 
 // Compute modified Phong BRDF
 static __device__ __inline__ float3 phongBRDF(const float3& kd, const float3& ks, 
@@ -210,9 +211,7 @@ RT_PROGRAM void closestHit()
 
             // Sample next indirect path
             // and update the contribution of the new path
-            float3 lightDir;
-
-            Sampler sampler = brdf;
+            float3 lightDir;            
             switch (sampler)
             {
                 case uniform:

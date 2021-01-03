@@ -14,7 +14,6 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 &nbsp; 
 &nbsp; 
 &nbsp; 
-&nbsp; 
 
 <img src="Scenes/images/dragon_2.png" width="250" align="right" vspace = "25">
 
@@ -29,16 +28,17 @@ Ubuntu 20.04: CUDA 10.2, OptiX 6.5
 
 <img src="Scenes/images/cornell_1.png" width="250" align="right" vspace = "25">  
 
-#### 12/30/2020 monte-carlo-path-tracer   
+#### 01/02/2021 monte-carlo-path-tracer   
 
 - Monte Carlo Path Tracer  
 Brute Force approach / Next event emission + Russian roulette
 - Importance Sampling with modified Phong BRDF
-- TODO: Realistic material model  
+- TODO: Realistic material model (GGX)
 - TODO: Multiple Importance Sampling
 
 &nbsp;  
+&nbsp; 
 &nbsp;  
 
 ### Gallery
-<img src="Scenes/images/bunny.png" width="256" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="192" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="256" vspace = "25">  
+<img src="Scenes/images/bunny.png" width="260" vspace = "25"> <img src="Scenes/images/cornell_2.png" width="195" vspace = "25"> <img src="Scenes/images/dragon_3.png" width="260" vspace = "25">  
