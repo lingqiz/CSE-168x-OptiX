@@ -46,6 +46,9 @@ struct Scene
     {
         outputFilename = "raytrace.png";
         integratorName = "raytracer";
+
+        maxDepth = 10;
+        spp = 64;
         lightSamples = 1;
         lightStratify = false;
     }

@@ -98,9 +98,10 @@ static __device__ __inline__ float3 directLight(unsigned int seed,
             if(shadowPayload.isVisible)
             {
                 radianceSum +=
-                phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir) * 
-                max(dot(attrib.surfNormal, lightDir), 0.0f) * 
-                max(dot(lightNormal, lightDir), 0.0f) / (lightDist * lightDist);
+                    phongBRDF(attrib.diffuse, attrib.specular, attrib.shininess, lightDir, reflectDir) * 
+                    max(dot(lightNormal, lightDir), 0.0f) / (lightDist * lightDist) * 
+                    max(dot(attrib.surfNormal, lightDir), 0.0f);
+                    
             }
         }
 
